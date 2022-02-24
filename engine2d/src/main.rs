@@ -45,7 +45,7 @@ struct State {
 
 pub fn main() {
     let assets = Assets {
-        img: Image::from_file(std::path::Path::new("content/king.png")),
+        img: Image::from_file(std::path::Path::new("content/spritesheet.png")),
         colors: [
             Color(255, 0, 0, 255),
             Color(255, 255, 0, 255),
@@ -209,7 +209,7 @@ fn vulkan_init(event_loop: &EventLoop<()>) -> (VulkanConfig, VulkanState) {
         let dimensions: [u32; 2] = surface.window().inner_size().into();
 
         Swapchain::start(device.clone(), surface.clone())
-            .num_images(8)
+            .num_images(caps.min_image_count)
             .format(format)
             .dimensions(dimensions)
             .usage(ImageUsage::color_attachment())

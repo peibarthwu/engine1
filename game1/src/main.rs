@@ -85,5 +85,6 @@ fn main() {
     }
 
     engine2d::main::go(state, assets, update, render2d);
+    // engine2d::main::main();
     println!("Hello, world!");
 }

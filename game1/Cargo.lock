@@ -538,6 +538,9 @@ name = "game1"
 version = "0.1.0"
 dependencies = [
  "engine2d",
+ "vulkano",
+ "vulkano-shaders",
+ "vulkano-win",
  "winit",
 ]
 
