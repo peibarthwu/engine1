@@ -30,12 +30,29 @@ fn main() {
         ]
     };
 
+    let wood_floor = Tile {
+        sheetpos: Rect {
+            pos: Vec2i { x: 0, y: 0 },
+            sz: Vec2i { x: 22, y: 22 },
+        },
+    }; 
+    
+    let grass = Tile {
+        sheetpos: Rect {
+            pos: Vec2i { x: 22, y: 0 },
+            sz: Vec2i { x: 22, y: 22 },
+        },
+    }; 
+    
+
     const WIDTH: usize = 320;
     const HEIGHT: usize = 240;
+
+    const TILE: usize = 22;
     
     let state = State {
-        w: WIDTH,
-        y: HEIGHT,
+        w: WIDTH / 2,
+        y: 32,
         color: 0,
     };
 
@@ -64,17 +81,25 @@ fn main() {
 
     fn render2d(assets: &Assets, state: &State, fb2d: &mut Image) {
         fb2d.clear(Color(128, 64, 64, 255));
-        fb2d.bitblt(
-            &assets.img,
-            Rect {
-                pos: Vec2i { x: 0, y: 16 },
-                sz: Vec2i { x: 16, y: 16 },
-            },
-            Vec2i {
-                x: fb2d.sz.x / 2,
-                y: fb2d.sz.y / 2,
-            },
-        );
+
+        //cover ground
+        for i in 1..(WIDTH/TILE)as i32 {
+            for j in 1..(HEIGHT/TILE)as i32 {
+            fb2d.bitblt(
+                &assets.img,
+                Rect {
+                    pos: Vec2i { x: 0, y: 0 },
+                    sz: Vec2i { x: 22, y: 22 },
+                },
+                Vec2i {
+                    x: 0 + ( 22*i) as i32,
+                    y: 0 + ( 22*j) as i32,
+                },
+            );
+            }
+        }
+        //add assets on top
+
         // Then draw our new line:
         fb2d.hline(
             WIDTH / 2 - state.w / 2,

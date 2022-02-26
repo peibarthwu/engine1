@@ -53,11 +53,27 @@ unsafe impl vulkano::format::Pixel for Color {
 }
 
 #[derive(PartialEq, Eq, Clone, Debug)]
-pub struct Room {
-    name: String, // E.g. "Antechamber"
-    desc: String, // E.g. "Dark wood paneling covers the walls.  The gilded northern doorway lies open."
-    doors: Vec<Door>
+pub struct Item {
+    pub name: String, // E.g. "Antechamber"
+    pub desc: String, // E.g. "Dark wood paneling covers the walls.  The gilded northern doorway lies open."
+    pub sheetpos: Rect,
+    pub roomloca: Vec2i,
 }
+
+pub struct Tile {
+    pub sheetpos: Rect,
+}
+
+#[derive(PartialEq, Eq, Clone, Debug)]
+pub struct Room {
+    pub name: String, // E.g. "Antechamber"
+    pub desc: String, // E.g. "Dark wood paneling covers the walls.  The gilded northern doorway lies open."
+    pub doors: Vec<Door>,
+    floor: Vec<Item>,
+    items: Vec<Item>
+}
+
+
 
 #[derive(PartialEq, Eq, Clone, Debug)]
 pub struct Door {
