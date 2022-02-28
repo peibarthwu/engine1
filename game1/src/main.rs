@@ -39,11 +39,11 @@ fn update(now_keys: &[bool], state: &mut State, assets:&Assets) {
             state.color - 1
         };
     }
-    if now_keys[VirtualKeyCode::Left as usize] && state.sprite.curPos.x >= 0 {
+    if now_keys[VirtualKeyCode::Left as usize] && state.sprite.cur_pos.x >= 0 {
         // state.w = if state.w < 4 { 0 } else { state.w - 4 };
         state.sprite.cur_pos.x -= 1;
     }
-    if now_keys[VirtualKeyCode::Right as usize] && (state.sprite.curPos.x + state.sprite.sheetpos.sz.x) < (WIDTH) as i32 {
+    if now_keys[VirtualKeyCode::Right as usize] && (state.sprite.cur_pos.x + state.sprite.sheetpos.sz.x) < (WIDTH) as i32 {
         state.sprite.cur_pos.x += 1;
     }
     // Exercise for the reader: Tie y to mouse movement
@@ -103,7 +103,7 @@ fn render2d(assets: &Assets, state: &State, fb2d: &mut Image) {
     fb2d.bitblt(
         &state.sprite.img,
         state.sprite.sheetpos,
-        state.sprite.curPos,
+        state.sprite.cur_pos,
     );
 }
 
@@ -120,10 +120,21 @@ fn main() {
         img: Image::from_file(std::path::Path::new("content/house.png")),
     };
 
+    let tree = Item {
+        name: String::from("Tree"),
+        desc: String::from(""),
+        sheetpos: Rect {
+                    pos: Vec2i { x: 0, y: 119 },
+                    sz: Vec2i { x: 49, y: 51 },
+                },
+        roomloca: Vec2i { x: 10, y: 60 },
+        img: Image::from_file(std::path::Path::new("content/spritesheet.png")),
+    };
+
     let yard = Room {
         name: String::from("Front Yard"),
         desc: String::from("A mysterious field"),
-        items: Vec::<Item>::from([house]),
+        items: Vec::<Item>::from([house, tree]),
         img: Image::from_file(std::path::Path::new("content/grass.png")),
     };
     
