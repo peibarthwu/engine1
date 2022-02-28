@@ -1,5 +1,6 @@
 pub mod types;
 pub mod image;
+pub mod gameobjects;
 pub mod main;
 
 // pub enum GameState {
