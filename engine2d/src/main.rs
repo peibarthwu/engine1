@@ -27,6 +27,7 @@ use winit::window::{Window, WindowBuilder};
 use crate::types::*;
 
 use crate::image::Image;
+use crate::text::Text;
 use crate::gameobjects::*;
 
 

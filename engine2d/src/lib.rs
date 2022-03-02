@@ -1,5 +1,6 @@
 pub mod types;
 pub mod image;
+pub mod text;
 pub mod gameobjects;
 pub mod main;
 

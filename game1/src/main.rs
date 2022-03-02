@@ -1,6 +1,8 @@
 use engine2d::types::*;
 use engine2d::image::Image;
+use engine2d::text::Text;
 use engine2d::gameobjects::*;
+
 
 
 use winit::event::{Event, VirtualKeyCode, WindowEvent};
@@ -88,24 +90,52 @@ fn render2d(assets: &Assets, state: &State, fb2d: &mut Image) {
         state.sprite.sheetpos,
         state.sprite.cur_pos,
     );
+
+    // add textbox and text
+    for desc in state.room.desc.iter() {
+        for txtbx in desc.txtbx.iter() {
+            fb2d.bitblt(
+            &txtbx.img,
+            txtbx.frames[txtbx.cur_frame],
+            txtbx.roomloca,
+        );
+    }
+}
+
+    for desc in state.room.desc.iter() {
+        fb2d.bitblt(
+            &desc.font,
+            desc.frames[desc.cur_frame],
+            desc.roomloca,
+        );
+    }
+
+
 }
 
 fn main() {
 
-    // let house = Item {
-    //     name: String::from("House"),
-    //     desc: String::from("A modern house"),
-    //     sheetpos: Rect {
-    //                 pos: Vec2i { x: 0, y: 0 },
-    //                 sz: Vec2i { x: 180, y: 110 },
-    //             },
-    //     roomloca: Vec2i { x: 83, y: 47 },
-    //     img: Image::from_file(std::path::Path::new("content/house.png")),
-    //     collider: Rect {
-    //         pos: Vec2i { x: 83, y: 47},
-    //         sz: Vec2i { x: 180, y: 110 },
-    //     }
-    // };
+     let house = Item {
+         name: String::from("House"),
+         desc: String::from("A modern house"),
+         sheetpos: Rect {
+                     pos: Vec2i { x: 0, y: 0 },
+                     sz: Vec2i { x: 180, y: 110 },
+                 },
+         roomloca: Vec2i { x: 83, y: 47 },
+         img: Image::from_file(std::path::Path::new("content/house.png")),
+         collider: Rect {
+             pos: Vec2i { x: 83, y: 47},
+             sz: Vec2i { x: 180, y: 110 },
+            },
+            frames: Vec::<Rect>::from([
+                Rect {
+                pos: Vec2i { x: 0, y: 0 },
+                sz: Vec2i { x: 180, y: 110 },
+            }
+            ]),
+            cur_frame: 0,
+     };
 
     let tree = Item {
         name: String::from("Tree"),
@@ -147,8 +177,8 @@ fn main() {
 
     let yard = Room {
         name: String::from("Front Yard"),
-        desc: String::from("A mysterious field"),
-        items: Vec::<Item>::from([tree]),
+        desc: Vec::<Text>::from([Text::new(String::from("A mysterious field"))]),
+        items: Vec::<Item>::from([tree, house]),
         img: Image::from_file(std::path::Path::new("content/grass.png")),
     };
     

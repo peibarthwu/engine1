@@ -1,5 +1,6 @@
 use super::types::*;
 use super::image::Image;
+use super::text::Text;
 
 // #[derive(PartialEq, Eq, Clone, Debug)]
 pub struct Item {
@@ -64,7 +65,7 @@ impl Animation for Item {
 // #[derive(PartialEq, Eq, Clone)]
 pub struct Room {
     pub name: String, // E.g. "Antechamber"
-    pub desc: String, // E.g. "Dark wood paneling covers the walls.  The gilded northern doorway lies open."
+    pub desc: Vec<Text>, // E.g. "Dark wood paneling covers the walls.  The gilded northern doorway lies open."
     //pub doors: Vec<Door>,
     //pub floor: Vec<Tile>,
     pub items: Vec<Item>,
