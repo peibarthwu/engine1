@@ -33,19 +33,6 @@ use crate::gameobjects::*;
 const WIDTH: usize = 320;
 const HEIGHT: usize = 240;
 
-struct Assets {
-    img: Image,
-    colors: [Color;6],
-}
-
-struct State {
-    w: usize,
-    y: usize,
-    color: usize,
-    room: Room,
-    sprite: Sprite,
-}
-
 
 // pub fn main() {
 //     let assets = Assets {

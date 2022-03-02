@@ -27,6 +27,17 @@ impl Rect {
         let obr = other.pos + other.sz;
         self.pos.x <= other.pos.x && self.pos.y <= other.pos.y && obr.x <= br.x && obr.y <= br.y
     }
+
+    pub fn touches(&self, other: Rect) -> bool {
+        // r1 left is left of r2 right
+        self.pos.x <= other.pos.x+other.sz.x as i32 &&
+            // r2 left is left of r1 right
+            other.pos.x <= self.pos.x+self.sz.x as i32 &&
+            // those two conditions handle the x axis overlap;
+            // the next two do the same for the y axis:
+            self.pos.y <= other.pos.y+other.sz.y as i32 &&
+            other.pos.y <= self.pos.y+self.sz.y as i32
+    }
 }
 
 #[repr(C)]
