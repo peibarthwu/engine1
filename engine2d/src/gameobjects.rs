@@ -28,10 +28,27 @@ pub struct Sprite {
 }
 
 impl Sprite {
-    pub fn moveself(&mut self, dx: i32, dy: i32, room: &Room) -> () {
+    pub fn moveself(&mut self, mut dx: i32, mut dy: i32, room: &Room) -> () {
         for item in room.items.iter() {
+            println!("{:?}", self.collider.touches(item.collider));
+                // match self.collider.rect_displacement(item.collider) {
+                //     None => {},
+                //     Some(overlap) => {
+                //         println!("overlap");
+                //         if(overlap.0 > 0){
+                //             dx = 0;
+                //         }
+                //         if(overlap.1 > 0){
+                //             dy = 0;
+                //         }
+                //     },
+                // }
+            
+            
+            
             if (item.collider.touches(self.collider)){
-                return();
+                dx = 0;
+                dy = 0;
             }
         }
         self.collider.pos.x += dx;
@@ -51,6 +68,9 @@ pub trait Animation {
 
 impl Animation for Item {
     fn anim(&mut self){
+        if(self.frames.len() == 0){
+            return;
+        }
         if( self.cur_frame < self.frames.len()){
             self.cur_frame += 1;
         }

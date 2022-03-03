@@ -38,6 +38,19 @@ impl Rect {
             self.pos.y <= other.pos.y+other.sz.y as i32 &&
             other.pos.y <= self.pos.y+self.sz.y as i32
     }
+
+    pub fn rect_displacement(&self, r2:Rect) -> Option<(i32,i32)> {
+        // Draw this out on paper to double check, but these quantities
+        // will both be positive exactly when the conditions in rect_touching are true.
+        let x_overlap = (self.pos.x+self.sz.x as i32).min(r2.pos.x+r2.sz.x as i32) - self.pos.x.max(r2.pos.y);
+        let y_overlap = (self.pos.y+self.sz.y as i32).min(r2.pos.y+r2.sz.y as i32) - self.pos.y.max(r2.pos.y);
+        if x_overlap >= 0 && y_overlap >= 0 {
+            // This will return the magnitude of overlap in each axis.
+            Some((x_overlap, y_overlap))
+        } else {
+            None
+        }
+    }
 }
 
 #[repr(C)]
