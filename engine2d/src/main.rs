@@ -517,7 +517,7 @@ fn render3d(vulkan_config: &mut VulkanConfig, vulkan_state: &mut VulkanState) {
 // area for improvement: all these 'static bounds are gnarly
 pub fn go<StateT, AssetsT>(mut s:StateT, a:AssetsT,
       update:impl Fn(&[bool], &mut StateT, &AssetsT) + 'static,
-      render:impl Fn(&AssetsT, &StateT, &mut Image) + 'static
+      render:impl Fn(&AssetsT, &mut StateT, &mut Image) + 'static
 ) where AssetsT:'static, StateT:'static {
     let event_loop = EventLoop::new();
     let (mut vulkan_config, mut vulkan_state) = vulkan_init(&event_loop);
@@ -566,7 +566,7 @@ pub fn go<StateT, AssetsT>(mut s:StateT, a:AssetsT,
                 // ^-- input handling and vulkan junk
 
                 update(&now_keys, &mut s, &a);
-                render(&a, &s, &mut vulkan_config.fb2d);
+                render(&a, &mut s, &mut vulkan_config.fb2d);
 
                 // now_keys are officially "old" now, after update
                 prev_keys.copy_from_slice(&now_keys);

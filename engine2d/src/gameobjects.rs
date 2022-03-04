@@ -2,7 +2,6 @@ use super::types::*;
 use super::image::Image;
 use super::text::Text;
 
-// #[derive(PartialEq, Eq, Clone, Debug)]
 pub struct Item {
     pub name: String, // E.g. "Antechamber"
     pub desc: String, // E.g. "Dark wood paneling covers the walls.  The gilded northern doorway lies open."
@@ -29,34 +28,25 @@ pub struct Sprite {
 }
 
 impl Sprite {
-    pub fn moveself(&mut self, mut dx: i32, mut dy: i32, room: &Room) -> () {
+    pub fn moveself(&mut self, mut dx: i32, mut dy: i32, room: &Room, state: &mut State) -> () {
+        self.collider.pos.x += dx;
+        self.collider.pos.y += dy;
         for item in room.items.iter() {
-            println!("{:?}", self.collider.touches(item.collider));
-                // match self.collider.rect_displacement(item.collider) {
-                //     None => {},
-                //     Some(overlap) => {
-                //         println!("overlap");
-                //         if(overlap.0 > 0){
-                //             dx = 0;
-                //         }
-                //         if(overlap.1 > 0){
-                //             dy = 0;
-                //         }
-                //     },
-                // }
-            
-            
-            
-            if (item.collider.touches(self.collider)){
+            println!("{:?}", item.name);
+            if (self.collider.touches(item.collider)){
+                self.collider.pos.x -= dx;
+                self.collider.pos.y -= dy;
                 dx = 0;
                 dy = 0;
             }
         }
-        self.collider.pos.x += dx;
-        self.collider.pos.y += dy;
 
+        
         self.cur_pos.x += dx;
         self.cur_pos.y += dy;
+        
+        println!("{:?}", dx);
+
     }
     //collisions look at greatest x point of one and lest of the other for x overlap
     // do the same with left overlap
@@ -72,7 +62,7 @@ impl Animation for Item {
         if(self.frames.len() == 0){
             return;
         }
-        if( self.cur_frame < self.frames.len()){
+        if( self.cur_frame < self.frames.len()-1){
             self.cur_frame += 1;
         }
         else{
@@ -86,18 +76,16 @@ impl Animation for Item {
 pub struct Room {
     pub name: String, // E.g. "Antechamber"
     pub desc: Vec<Text>, // E.g. "Dark wood paneling covers the walls.  The gilded northern doorway lies open."
-    //pub doors: Vec<Door>,
+    pub doors: Vec<Door>,
     //pub floor: Vec<Tile>,
     pub items: Vec<Item>,
     pub img: Image,
 }
 
-#[derive(PartialEq, Eq, Clone, Debug)]
+// #[derive(PartialEq, Eq, Clone, Debug)]
 pub struct Door {
-    target: String, // More about this in a minute
-    triggers:Vec<String>, // e.g. "go north", "north"
-    message: Option<String> // What message, if any, to print when the doorway is traversed
-    // Any other info about the door would go here
+    pub collider: Rect,
+    pub target: usize, //where it goes
 }
 
 pub struct Assets {
@@ -109,6 +97,37 @@ pub struct State {
     pub w: usize,
     pub h: usize,
     pub color: usize,
-    pub room: Room,
+    pub room: usize,
+    pub rooms: Vec<Room>,
     pub sprite: Sprite,
+}
+
+impl State {
+    pub fn update(&mut self, mut dx: i32, mut dy: i32) -> () {
+        self.sprite.collider.pos.x += dx;
+        self.sprite.collider.pos.y += dy;
+        for item in self.rooms[self.room].items.iter() {
+            println!("{:?}", item.name);
+            if (self.sprite.collider.touches(item.collider)){
+                self.sprite.collider.pos.x -= dx;
+                self.sprite.collider.pos.y -= dy;
+                dx = 0;
+                dy = 0;
+            }
+        }
+
+        for door in self.rooms[self.room].doors.iter() {
+            if (self.sprite.collider.touches(door.collider)){
+                self.room = door.target;
+            }
+        }
+        self.sprite.cur_pos.x += dx;
+        self.sprite.cur_pos.y += dy;
+        
+        println!("{:?}", dx);
+
+    }
+    //collisions look at greatest x point of one and lest of the other for x overlap
+    // do the same with left overlap
+    //if both overlap them collision
 }
