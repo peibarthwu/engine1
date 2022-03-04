@@ -217,12 +217,16 @@ fn main() {
         items: Vec::<Item>::from([key, couch]),
         img: Image::from_file(std::path::Path::new("content/room3.png")),
         doors: Vec::<Door>::from([]),
+        floor: Rect {
+            pos: Vec2i { x: 52, y: 91 },
+            sz: Vec2i { x: 217, y: 92 },
+        }
     };
 
     let door = Door {
         collider: Rect {
-            pos: Vec2i { x: 136, y: 111 },
-            sz: Vec2i { x: 26, y: 50 },
+            pos: Vec2i { x: 146, y: 111 },
+            sz: Vec2i { x: 6, y: 50 },
         },
         target: 1,
     };
@@ -233,6 +237,10 @@ fn main() {
         items: Vec::<Item>::from([tree, house]),
         img: Image::from_file(std::path::Path::new("content/grass.png")),
         doors: Vec::<Door>::from([door]),
+        floor: Rect {
+            pos: Vec2i { x: 0, y: 0 },
+            sz: Vec2i { x: 320, y: 240 },
+        }
     };
     
     let assets = Assets {

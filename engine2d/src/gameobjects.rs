@@ -27,30 +27,6 @@ pub struct Sprite {
     pub collider: Rect,
 }
 
-impl Sprite {
-    pub fn moveself(&mut self, mut dx: i32, mut dy: i32, room: &Room, state: &mut State) -> () {
-        self.collider.pos.x += dx;
-        self.collider.pos.y += dy;
-        for item in room.items.iter() {
-            if (self.collider.touches(item.collider)){
-                self.collider.pos.x -= dx;
-                self.collider.pos.y -= dy;
-                dx = 0;
-                dy = 0;
-                println!("{:?}", item.name);
-                println!("{:?}", item.desc);
-            }
-        }
-
-        
-        self.cur_pos.x += dx;
-        self.cur_pos.y += dy;
-        
-    }
-    //collisions look at greatest x point of one and lest of the other for x overlap
-    // do the same with left overlap
-    //if both overlap them collision
-}
 
 pub trait Animation {
     fn anim(&mut self){}
@@ -76,9 +52,9 @@ pub struct Room {
     pub name: String, // E.g. "Antechamber"
     pub desc: Vec<Text>, // E.g. "Dark wood paneling covers the walls.  The gilded northern doorway lies open."
     pub doors: Vec<Door>,
-    //pub floor: Vec<Tile>,
     pub items: Vec<Item>,
     pub img: Image,
+    pub floor: Rect,
 }
 
 // #[derive(PartialEq, Eq, Clone, Debug)]
@@ -104,13 +80,18 @@ pub struct State {
 
 impl State {
     pub fn update(&mut self, mut dx: i32, mut dy: i32) -> () {
-        self.sprite.collider.pos.x += dx;
-        self.sprite.collider.pos.y += dy;
+        let new_collider = Rect {
+            pos: Vec2i { x: self.sprite.collider.pos.x as i32 + dx, y: self.sprite.collider.pos.y as i32 + dy},
+            sz: self.sprite.collider.sz,
+        };
+       
+        if self.rooms[self.room].floor.contains(new_collider) == false {
+            dx = 0;
+            dy = 0;
+        }
 
         for item in self.rooms[self.room].items.iter() {
-            if (self.sprite.collider.touches(item.collider)){
-                self.sprite.collider.pos.x -= dx;
-                self.sprite.collider.pos.y -= dy;
+            if (new_collider.touches(item.collider)){
                 dx = 0;
                 dy = 0;
                 println!("{:?}", item.name);
@@ -119,7 +100,6 @@ impl State {
                 if (item.name == "Key"){
                     println!("You got the key");
                 }
-
             }
         }
 
@@ -128,8 +108,11 @@ impl State {
                 self.room = door.target;
             }
         }
+
         self.sprite.cur_pos.x += dx;
         self.sprite.cur_pos.y += dy;
+        self.sprite.collider.pos.x += dx;
+        self.sprite.collider.pos.y += dy;
     }
     //collisions look at greatest x point of one and lest of the other for x overlap
     // do the same with left overlap
