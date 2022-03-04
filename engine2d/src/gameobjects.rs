@@ -32,12 +32,13 @@ impl Sprite {
         self.collider.pos.x += dx;
         self.collider.pos.y += dy;
         for item in room.items.iter() {
-            println!("{:?}", item.name);
             if (self.collider.touches(item.collider)){
                 self.collider.pos.x -= dx;
                 self.collider.pos.y -= dy;
                 dx = 0;
                 dy = 0;
+                println!("{:?}", item.name);
+                println!("{:?}", item.desc);
             }
         }
 
@@ -45,8 +46,6 @@ impl Sprite {
         self.cur_pos.x += dx;
         self.cur_pos.y += dy;
         
-        println!("{:?}", dx);
-
     }
     //collisions look at greatest x point of one and lest of the other for x overlap
     // do the same with left overlap
@@ -100,19 +99,27 @@ pub struct State {
     pub room: usize,
     pub rooms: Vec<Room>,
     pub sprite: Sprite,
+    pub inventory: Vec<Item>,
 }
 
 impl State {
     pub fn update(&mut self, mut dx: i32, mut dy: i32) -> () {
         self.sprite.collider.pos.x += dx;
         self.sprite.collider.pos.y += dy;
+
         for item in self.rooms[self.room].items.iter() {
-            println!("{:?}", item.name);
             if (self.sprite.collider.touches(item.collider)){
                 self.sprite.collider.pos.x -= dx;
                 self.sprite.collider.pos.y -= dy;
                 dx = 0;
                 dy = 0;
+                println!("{:?}", item.name);
+                println!("{:?}", item.desc);
+
+                if (item.name == "Key"){
+                    println!("You got the key");
+                }
+
             }
         }
 
@@ -123,9 +130,6 @@ impl State {
         }
         self.sprite.cur_pos.x += dx;
         self.sprite.cur_pos.y += dy;
-        
-        println!("{:?}", dx);
-
     }
     //collisions look at greatest x point of one and lest of the other for x overlap
     // do the same with left overlap

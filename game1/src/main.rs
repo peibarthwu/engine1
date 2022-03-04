@@ -122,8 +122,6 @@ fn main() {
         cur_frame: 0,
      };
 
-     
-
     let tree = Item {
         name: String::from("Tree"),
         desc: String::from(""),
@@ -147,6 +145,46 @@ fn main() {
             //     sz: Vec2i { x: 49, y: 51 },
             // }
         ]),
+        cur_frame: 0,
+    };
+
+    let key = Item {
+        name: String::from("Key"),
+        desc: String::from("I wonder what this opens..."),
+        sheetpos: Rect {
+                    pos: Vec2i { x: 37, y: 40 },
+                    sz: Vec2i { x: 3, y: 7 },
+                },
+        roomloca: Vec2i { x: 100, y: 60 },
+        img: Image::from_file(std::path::Path::new("content/spritesheet.png")),
+        collider: Rect {
+            pos: Vec2i { x: 100, y: 60 },
+            sz: Vec2i { x: 3, y: 7 },
+        },
+        frames: vec![Rect {
+            pos: Vec2i { x: 37, y: 40 },
+            sz: Vec2i { x: 3, y: 7 },
+        }],
+        cur_frame: 0,
+    };
+
+    let couch = Item {
+        name: String::from("Couch"),
+        desc: String::from("Just a couch"),
+        sheetpos: Rect {
+                    pos: Vec2i { x: 134, y: 0 },
+                    sz: Vec2i { x: 69, y: 23 },
+                },
+        roomloca: Vec2i { x: 200, y: 100 },
+        img: Image::from_file(std::path::Path::new("content/spritesheet.png")),
+        collider: Rect {
+            pos: Vec2i { x: 200, y: 100 },
+            sz: Vec2i { x: 69, y: 23 },
+        },
+        frames: vec![Rect {
+            pos: Vec2i { x: 134, y: 0 },
+            sz: Vec2i { x: 69, y: 23 },
+        }],
         cur_frame: 0,
     };
 
@@ -176,7 +214,7 @@ fn main() {
     let livingroom = Room {
         name: String::from("Front Yard"),
         desc: Vec::<Text>::from([Text::new(String::from("ughh"))]),
-        items: Vec::<Item>::from([]),
+        items: Vec::<Item>::from([key, couch]),
         img: Image::from_file(std::path::Path::new("content/room3.png")),
         doors: Vec::<Door>::from([]),
     };
@@ -230,6 +268,7 @@ fn main() {
         room: 0,
         rooms: vec![yard, livingroom],
         sprite: sprite,
+        inventory: vec![],
     };
 
     engine2d::main::go(state, assets, update, render2d);
