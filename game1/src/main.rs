@@ -1,6 +1,6 @@
 use engine2d::types::*;
 use engine2d::image::Image;
-use engine2d::text::Textbox;
+use engine2d::text::*;
 use engine2d::gameobjects::*;
 
 
@@ -198,7 +198,7 @@ fn main() {
 
     let shelf = Item {
         name: String::from("Shelf"),
-        desc: String::from("I don't know any of these books"),
+        desc: Vec::<Textbox>::from([Textbox::new(String::from("I don't know any of these books"))]),
         sheetpos: Rect {
                     pos: Vec2i { x: 52, y: 25 },
                     sz: Vec2i { x: 41, y: 35 },
@@ -218,7 +218,7 @@ fn main() {
 
     let shrub = Item {
         name: String::from("Shrub"),
-        desc: String::from(""),
+        desc: Vec::<Textbox>::from([Textbox::new(String::from("I don't know any of these books"))]),
         sheetpos: Rect {
                     pos: Vec2i { x: 0, y: 70 },
                     sz: Vec2i { x: 22, y: 14 },
@@ -240,7 +240,7 @@ fn main() {
     };
     let dresser = Item {
         name: String::from("Dresser"),
-        desc: String::from("There's nothing in this."),
+        desc: Vec::<Textbox>::from([Textbox::new(String::from("There's nothing in this."))]),
         sheetpos: Rect {
                     pos: Vec2i { x: 190, y: 28 },
                     sz: Vec2i { x: 31, y: 19 },
@@ -260,7 +260,7 @@ fn main() {
 
     let diary = Item {
         name: String::from("Diary"),
-        desc: String::from("Idk whose diary this is. It's locked."),
+        desc: Vec::<Textbox>::from([Textbox::new(String::from("Idk whose diary this is. It's locked."))]),
         sheetpos: Rect {
                     pos: Vec2i { x: 97, y: 104 },
                     sz: Vec2i { x: 8, y: 10 },
