@@ -1,4 +1,5 @@
 use super::types::*;
+#[derive(Clone)]
 pub struct Image {
     buffer: Box<[Color]>,
     pub sz: Vec2i,
