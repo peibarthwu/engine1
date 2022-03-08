@@ -172,10 +172,10 @@ fn main() {
                     pos: Vec2i { x: 37, y: 40 },
                     sz: Vec2i { x: 3, y: 7 },
                 },
-        roomloca: Vec2i { x: 100, y: 60 },
+        roomloca: Vec2i { x: 100, y: 10 },
         img: Image::from_file(std::path::Path::new("content/spritesheet.png")),
         collider: Rect {
-            pos: Vec2i { x: 100, y: 60 },
+            pos: Vec2i { x: 100, y: 10 },
             sz: Vec2i { x: 3, y: 7 },
         },
         frames: vec![Rect {
@@ -206,6 +206,26 @@ fn main() {
         cur_frame: 0,
     };
 
+    let shelf = Item {
+        name: String::from("Shelf"),
+        desc: String::from("I don't know any of these books"),
+        sheetpos: Rect {
+                    pos: Vec2i { x: 52, y: 25 },
+                    sz: Vec2i { x: 41, y: 35 },
+                },
+        roomloca: Vec2i { x: 53, y: 89 },
+        img: Image::from_file(std::path::Path::new("content/spritesheet.png")),
+        collider: Rect {
+            pos: Vec2i { x: 53, y: 89 },
+            sz: Vec2i { x: 1, y: 1 },
+        },
+        frames: vec![Rect {
+            pos: Vec2i { x: 52, y: 25 },
+            sz: Vec2i { x: 41, y: 35 },
+        }],
+        cur_frame: 0,
+    };
+
     // let shrub = Item {
     //     name: String::from("Shrub"),
     //     desc: String::from(""),
@@ -228,13 +248,58 @@ fn main() {
     //     cur_frame: 0,
 
     // };
+    let dresser = Item {
+        name: String::from("Dresser"),
+        desc: String::from("There's nothing in this."),
+        sheetpos: Rect {
+                    pos: Vec2i { x: 192, y: 28 },
+                    sz: Vec2i { x: 31, y: 19 },
+                },
+        roomloca: Vec2i { x: 53, y: 100 },
+        img: Image::from_file(std::path::Path::new("content/spritesheet.png")),
+        collider: Rect {
+            pos: Vec2i { x: 53, y: 100 },
+            sz: Vec2i { x: 1, y: 1 },
+        },
+        frames: vec![Rect {
+            pos: Vec2i { x: 192, y: 28 },
+            sz: Vec2i { x: 31, y: 19 },
+        }],
+        cur_frame: 0,
+    };
+
+
+    let hallway = Room {
+        name: String::from("Hallway"),
+        desc: Vec::<Text>::from([Text::new(String::from("ughh"))]),
+        items: Vec::<Item>::from([dresser]),
+        img: Image::from_file(std::path::Path::new("content/hallway.png")),
+        doors: Vec::<Door>::from([]),
+        floor: Rect {
+            pos: Vec2i { x: 52, y: 91 },
+            sz: Vec2i { x: 217, y: 92 },
+        }
+    };
+
+    let livingroom_door = Door {
+        collider: Rect {
+            pos: Vec2i { x: 264, y: 138},
+            sz: Vec2i { x: 6, y: 20 },
+        },
+        target: 2,
+    };
 
     let livingroom = Room {
         name: String::from("Front Yard"),
+<<<<<<< HEAD
         desc: Vec::<Textbox>::from([Textbox::new(String::from("ughh"))]),
         items: Vec::<Item>::from([key, couch]),
+=======
+        desc: Vec::<Text>::from([Text::new(String::from("ughh"))]),
+        items: Vec::<Item>::from([key, couch, shelf]),
+>>>>>>> bdd7fe7fda93318cfdfee889120c85c07c3791bc
         img: Image::from_file(std::path::Path::new("content/room3.png")),
-        doors: Vec::<Door>::from([]),
+        doors: Vec::<Door>::from([livingroom_door]),
         floor: Rect {
             pos: Vec2i { x: 52, y: 91 },
             sz: Vec2i { x: 217, y: 92 },
@@ -293,7 +358,7 @@ fn main() {
         h: HEIGHT,
         color: 0,
         room: 0,
-        rooms: vec![yard, livingroom],
+        rooms: vec![yard, livingroom, hallway],
         sprite: sprite,
         inventory: vec![],
     };
