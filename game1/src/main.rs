@@ -299,7 +299,7 @@ fn main() {
 
     let hallway = Room {
         name: String::from("Hallway"),
-        desc: Vec::<Text>::from([Text::new(String::from("ughh"))]),
+        desc: Vec::<Textbox>::from([Text::new(String::from("ughh"))]),
         items: Vec::<Item>::from([dresser, diary]),
         img: Image::from_file(std::path::Path::new("content/hallway.png")),
         doors: Vec::<Door>::from([hallway_door1, hallway_door2]),
@@ -341,7 +341,7 @@ fn main() {
 
     let yard = Room {
         name: String::from("Front Yard"),
-        desc: Vec::<Text>::from([Text::new(String::from("A mysterious field"))]),
+        desc: Vec::<Textbox>::from([Text::new(String::from("A mysterious field"))]),
         items: Vec::<Item>::from([tree, house, shrub]),
         img: Image::from_file(std::path::Path::new("content/grass.png")),
         doors: Vec::<Door>::from([door]),
