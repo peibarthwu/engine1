@@ -218,7 +218,7 @@ fn main() {
 
     let shrub = Item {
         name: String::from("Shrub"),
-        desc: Vec::<Textbox>::from([Textbox::new(String::from("I don't know any of these books"))]),
+        desc: Vec::<Textbox>::from([Textbox::new(String::from(""))]),
         sheetpos: Rect {
                     pos: Vec2i { x: 0, y: 70 },
                     sz: Vec2i { x: 22, y: 14 },
@@ -261,7 +261,7 @@ fn main() {
 
     let diary = Item {
         name: String::from("Diary"),
-        desc: Vec::<Textbox>::from([Textbox::new(String::from("Idk whose diary this is. It's locked."))]),
+        desc: Vec::<Textbox>::from([Textbox::new(String::from("Idk whose diary this is. It is locked."))]),
         sheetpos: Rect {
                     pos: Vec2i { x: 97, y: 104 },
                     sz: Vec2i { x: 8, y: 10 },
@@ -299,7 +299,7 @@ fn main() {
 
     let hallway = Room {
         name: String::from("Hallway"),
-        desc: Vec::<Textbox>::from([Text::new(String::from("ughh"))]),
+        desc: Vec::<Textbox>::from([Textbox::new(String::from("ughh"))]),
         items: Vec::<Item>::from([dresser, diary]),
         img: Image::from_file(std::path::Path::new("content/hallway.png")),
         doors: Vec::<Door>::from([hallway_door1, hallway_door2]),
@@ -341,7 +341,7 @@ fn main() {
 
     let yard = Room {
         name: String::from("Front Yard"),
-        desc: Vec::<Textbox>::from([Text::new(String::from("A mysterious field"))]),
+        desc: Vec::<Textbox>::from([Textbox::new(String::from("A mysterious field"))]),
         items: Vec::<Item>::from([tree, house, shrub]),
         img: Image::from_file(std::path::Path::new("content/grass.png")),
         doors: Vec::<Door>::from([door]),
