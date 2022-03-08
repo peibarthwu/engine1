@@ -240,6 +240,7 @@ fn main() {
     };
     let dresser = Item {
         name: String::from("Dresser"),
+        //desc: String::from("There's nothing in this."),
         desc: Vec::<Textbox>::from([Textbox::new(String::from("There's nothing in this."))]),
         sheetpos: Rect {
                     pos: Vec2i { x: 190, y: 28 },
