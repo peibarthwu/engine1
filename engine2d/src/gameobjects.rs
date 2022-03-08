@@ -35,10 +35,10 @@ pub trait Animation {
 
 impl Animation for Item {
     fn anim(&mut self){
-        if(self.frames.len() == 0){
+        if self.frames.len() == 0{
             return;
         }
-        if( self.cur_frame < self.frames.len()-1){
+        if self.cur_frame < self.frames.len()-1{
             self.cur_frame += 1;
         }
         else{
@@ -62,6 +62,7 @@ pub struct Room {
 pub struct Door {
     pub collider: Rect,
     pub target: usize, //where it goes
+    pub spawn_pos: Vec2i,
 }
 
 pub struct Assets {
@@ -72,13 +73,14 @@ pub struct Assets {
 pub struct State {
     pub w: usize,
     pub h: usize,
+    pub fc: i32,
     pub color: usize,
     pub room: usize,
     pub rooms: Vec<Room>,
     //pub textbox: usize,
     //pub textboxes: Vec<Textbox>,
     pub sprite: Sprite,
-    pub inventory: Vec<Item>,
+    pub inventory: Vec<String>,
 }
 
 impl State {
@@ -94,22 +96,28 @@ impl State {
         }
 
         for item in self.rooms[self.room].items.iter() {
-            if (new_collider.touches(item.collider)){
+            if new_collider.touches(item.collider){
                 dx = 0;
                 dy = 0;
                 println!("{:?}", item.name);
                 //println!("{:?}", item.desc);
                 
 
-                if (item.name == "Key"){
+                if item.name == "Key"{
                     println!("You got the key");
+                    // item.roomloca =  Vec2i { x: self.sprite.cur_pos.x as i32 + 10, y: self.sprite.cur_pos.x as i32 + 20};
+                    // item.collider.sz = Vec2i { x: 0, y: 0 };
+                    // self.inventory.push(item.name.clone());
                 }
             }
         }
 
         for door in self.rooms[self.room].doors.iter() {
-            if (self.sprite.collider.touches(door.collider)){
+            if self.sprite.collider.touches(door.collider){
                 self.room = door.target;
+                // self.sprite.cur_pos = door.spawn_pos;
+                // self.sprite.collider.pos= door.spawn_pos;
+                
             }
         }
 
@@ -118,6 +126,8 @@ impl State {
         self.sprite.collider.pos.x += dx;
         self.sprite.collider.pos.y += dy;
     }
+
+    
     //collisions look at greatest x point of one and lest of the other for x overlap
     // do the same with left overlap
     //if both overlap them collision

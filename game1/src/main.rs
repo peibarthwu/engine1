@@ -20,33 +20,24 @@ const TILE: usize = 22;
 fn update(now_keys: &[bool], state: &mut State, assets:&Assets) {
     // We can actually handle events now that we know what they all are.
     if now_keys[VirtualKeyCode::Up as usize] && state.sprite.cur_pos.y >= 0 {
-        // state.sprite.cur_pos.y -= 1;
-        // state.sprite.moveself(0, -1, &state.room);
         state.update(0,-1);
     }
     if now_keys[VirtualKeyCode::Down as usize] && (state.sprite.cur_pos.y + state.sprite.sheetpos.sz.y) < (HEIGHT) as i32 {
-        // What is this if doing?
-        // state.sprite.moveself(0, 1, &state.room);
         state.update(0,1);
 
     }
     if now_keys[VirtualKeyCode::Left as usize] && state.sprite.cur_pos.x >= 0 {
-        // state.w = if state.w < 4 { 0 } else { state.w - 4 };
-        // state.sprite.moveself(-1, 0, &state.room);
         state.update(-1,0);
-
     }
     if now_keys[VirtualKeyCode::Right as usize] && (state.sprite.cur_pos.x + state.sprite.sheetpos.sz.x) < (WIDTH) as i32 {
-        // state.sprite.moveself(1, 0, &state.room);
         state.update(1,0);
-
     }
     // Exercise for the reader: Tie y to mouse movement
 }
 
 fn render2d(assets: &Assets, state: &mut State, fb2d: &mut Image) {
     fb2d.clear(Color(128, 64, 64, 255));
-
+    state.fc += 1;
     fb2d.bitblt(
         &state.rooms[state.room].img,
         Rect {
@@ -66,8 +57,7 @@ fn render2d(assets: &Assets, state: &mut State, fb2d: &mut Image) {
             item.frames[item.cur_frame],
             item.roomloca,
         );
-        item.anim();
-        }
+    }
 
     // move sprite
     fb2d.bitblt(
@@ -127,7 +117,7 @@ fn main() {
          img: Image::from_file(std::path::Path::new("content/house.png")),
          collider: Rect {
              pos: Vec2i { x: 83, y: 47},
-             sz: Vec2i { x: 180, y: 70 },
+             sz: Vec2i { x: 180, y: 97 },
             },
         frames: Vec::<Rect>::from([
             Rect {
@@ -172,7 +162,7 @@ fn main() {
                     pos: Vec2i { x: 37, y: 40 },
                     sz: Vec2i { x: 3, y: 7 },
                 },
-        roomloca: Vec2i { x: 100, y: 10 },
+        roomloca: Vec2i { x: 300, y: 10 },
         img: Image::from_file(std::path::Path::new("content/spritesheet.png")),
         collider: Rect {
             pos: Vec2i { x: 100, y: 10 },
@@ -227,34 +217,34 @@ fn main() {
         cur_frame: 0,
     };
 
-    // let shrub = Item {
-    //     name: String::from("Shrub"),
-    //     desc: String::from(""),
-    //     sheetpos: Rect {
-    //                 pos: Vec2i { x: 0, y: 70 },
-    //                 sz: Vec2i { x: 22, y: 14 },
-    //             },
-    //     roomloca: Vec2i { x: 200, y: 200 },
-    //     img: Image::from_file(std::path::Path::new("content/spritesheet.png")),
-    //     collider: Rect {
-    //         pos: Vec2i { x: 200, y: 200 },
-    //         sz: Vec2i { x: 22, y: 14 },
-    //     },
-    //     frames: Vec::<Rect>::from([
-    //         Rect {
-    //             pos: Vec2i { x: 0, y: 70 },
-    //             sz: Vec2i { x: 22, y: 14 },
-    //     }
-    //     ]),
-    //     cur_frame: 0,
+    let shrub = Item {
+        name: String::from("Shrub"),
+        desc: String::from(""),
+        sheetpos: Rect {
+                    pos: Vec2i { x: 0, y: 70 },
+                    sz: Vec2i { x: 22, y: 14 },
+                },
+        roomloca: Vec2i { x: 200, y: 200 },
+        img: Image::from_file(std::path::Path::new("content/spritesheet.png")),
+        collider: Rect {
+            pos: Vec2i { x: 200, y: 200 },
+            sz: Vec2i { x: 22, y: 14 },
+        },
+        frames: Vec::<Rect>::from([
+            Rect {
+                pos: Vec2i { x: 0, y: 70 },
+                sz: Vec2i { x: 22, y: 14 },
+        }
+        ]),
+        cur_frame: 0,
 
-    // };
+    };
     let dresser = Item {
         name: String::from("Dresser"),
         //desc: String::from("There's nothing in this."),
         desc: Vec::<Textbox>::from([Textbox::new(String::from("There's nothing in this."))]),
         sheetpos: Rect {
-                    pos: Vec2i { x: 192, y: 28 },
+                    pos: Vec2i { x: 190, y: 28 },
                     sz: Vec2i { x: 31, y: 19 },
                 },
         roomloca: Vec2i { x: 53, y: 100 },
@@ -264,22 +254,58 @@ fn main() {
             sz: Vec2i { x: 1, y: 1 },
         },
         frames: vec![Rect {
-            pos: Vec2i { x: 192, y: 28 },
+            pos: Vec2i { x: 190, y: 28 },
             sz: Vec2i { x: 31, y: 19 },
         }],
         cur_frame: 0,
     };
 
+    let diary = Item {
+        name: String::from("Diary"),
+        desc: String::from("Idk whose diary this is. It's locked."),
+        sheetpos: Rect {
+                    pos: Vec2i { x: 97, y: 104 },
+                    sz: Vec2i { x: 8, y: 10 },
+                },
+        roomloca: Vec2i { x: 600, y: 22 },
+        img: Image::from_file(std::path::Path::new("content/spritesheet.png")),
+        collider: Rect {
+            pos: Vec2i { x: 136, y: 22 },
+            sz: Vec2i { x: 8, y: 10 },
+        },
+        frames: vec![Rect {
+            pos: Vec2i { x: 97, y: 104 },
+            sz: Vec2i { x: 8, y: 10 },
+        }],
+        cur_frame: 0,
+    };
+
+    let hallway_door1 = Door {
+        collider: Rect {
+            pos: Vec2i { x: 51, y: 133 },
+            sz: Vec2i { x: 6, y: 50 },
+        },
+        target: 1,
+        spawn_pos: Vec2i { x: 100, y: 157 },
+    };
+
+    let hallway_door2 = Door {
+        collider: Rect {
+            pos: Vec2i { x: 264, y: 157 },
+            sz: Vec2i { x: 6, y: 50 },
+        },
+        target: 0,
+        spawn_pos: Vec2i { x: 100, y: 157 },
+    };
 
     let hallway = Room {
         name: String::from("Hallway"),
-        //desc: Vec::<Text>::from([Text::new(String::from("ughh"))]),
-        desc: Vec::<Textbox>::from([Textbox::new(String::from("ughh"))]),
-        items: Vec::<Item>::from([dresser]),
+        desc: Vec::<Text>::from([Text::new(String::from("ughh"))]),
+        items: Vec::<Item>::from([dresser, diary]),
         img: Image::from_file(std::path::Path::new("content/hallway.png")),
-        doors: Vec::<Door>::from([]),
+        doors: Vec::<Door>::from([hallway_door1, hallway_door2]),
         floor: Rect {
-            pos: Vec2i { x: 52, y: 91 },
+            pos: Vec2i { x: 52, y: 119 },
             sz: Vec2i { x: 217, y: 92 },
         }
     };
@@ -290,6 +316,7 @@ fn main() {
             sz: Vec2i { x: 6, y: 20 },
         },
         target: 2,
+        spawn_pos: Vec2i { x: 100, y: 157 },
     };
 
     let livingroom = Room {
@@ -299,7 +326,7 @@ fn main() {
         img: Image::from_file(std::path::Path::new("content/room3.png")),
         doors: Vec::<Door>::from([livingroom_door]),
         floor: Rect {
-            pos: Vec2i { x: 52, y: 91 },
+            pos: Vec2i { x: 52, y: 119 },
             sz: Vec2i { x: 217, y: 92 },
         }
     };
@@ -310,13 +337,13 @@ fn main() {
             sz: Vec2i { x: 6, y: 50 },
         },
         target: 1,
+        spawn_pos: Vec2i { x: 146, y: 111 },
     };
 
     let yard = Room {
         name: String::from("Front Yard"),
-        desc: Vec::<Textbox>::from([Textbox::new(String::from("A mysterious field"))]),
-
-        items: Vec::<Item>::from([tree, house]),
+        desc: Vec::<Text>::from([Text::new(String::from("A mysterious field"))]),
+        items: Vec::<Item>::from([tree, house, shrub]),
         img: Image::from_file(std::path::Path::new("content/grass.png")),
         doors: Vec::<Door>::from([door]),
         floor: Rect {
@@ -345,8 +372,8 @@ fn main() {
         img: Image::from_file(std::path::Path::new("content/spritesheet.png")),
         cur_pos: Vec2i { x: 0, y: 0 },
         collider: Rect {
-            pos: Vec2i { x: 0, y: 0 },
-            sz: Vec2i {x: 12, y: 37},
+            pos: Vec2i { x: 0, y: 27 },
+            sz: Vec2i {x: 12, y: 10},
         },
     };
 
@@ -354,6 +381,7 @@ fn main() {
     let state = State {
         w: WIDTH,
         h: HEIGHT,
+        fc: 0,
         color: 0,
         room: 0,
         rooms: vec![yard, livingroom, hallway],
