@@ -1,6 +1,6 @@
 use engine2d::types::*;
 use engine2d::image::Image;
-use engine2d::text::Textbox;
+use engine2d::text::*;
 use engine2d::gameobjects::*;
 
 
@@ -208,7 +208,8 @@ fn main() {
 
     let shelf = Item {
         name: String::from("Shelf"),
-        desc: String::from("I don't know any of these books"),
+        //desc: String::from("I don't know any of these books"),
+        desc: Vec::<Textbox>::from([Textbox::new(String::from("I don't know any of these books"))]),
         sheetpos: Rect {
                     pos: Vec2i { x: 52, y: 25 },
                     sz: Vec2i { x: 41, y: 35 },
@@ -250,7 +251,8 @@ fn main() {
     // };
     let dresser = Item {
         name: String::from("Dresser"),
-        desc: String::from("There's nothing in this."),
+        //desc: String::from("There's nothing in this."),
+        desc: Vec::<Textbox>::from([Textbox::new(String::from("There's nothing in this."))]),
         sheetpos: Rect {
                     pos: Vec2i { x: 192, y: 28 },
                     sz: Vec2i { x: 31, y: 19 },
@@ -271,7 +273,8 @@ fn main() {
 
     let hallway = Room {
         name: String::from("Hallway"),
-        desc: Vec::<Text>::from([Text::new(String::from("ughh"))]),
+        //desc: Vec::<Text>::from([Text::new(String::from("ughh"))]),
+        desc: Vec::<Textbox>::from([Textbox::new(String::from("ughh"))]),
         items: Vec::<Item>::from([dresser]),
         img: Image::from_file(std::path::Path::new("content/hallway.png")),
         doors: Vec::<Door>::from([]),
@@ -291,13 +294,8 @@ fn main() {
 
     let livingroom = Room {
         name: String::from("Front Yard"),
-<<<<<<< HEAD
         desc: Vec::<Textbox>::from([Textbox::new(String::from("ughh"))]),
         items: Vec::<Item>::from([key, couch]),
-=======
-        desc: Vec::<Text>::from([Text::new(String::from("ughh"))]),
-        items: Vec::<Item>::from([key, couch, shelf]),
->>>>>>> bdd7fe7fda93318cfdfee889120c85c07c3791bc
         img: Image::from_file(std::path::Path::new("content/room3.png")),
         doors: Vec::<Door>::from([livingroom_door]),
         floor: Rect {
