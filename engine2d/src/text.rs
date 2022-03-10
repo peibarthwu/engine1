@@ -3,32 +3,30 @@ use super::image::Image;
 
 #[derive(Clone)]
 pub struct Text {
-    //pub words: String,
-    //pub my_str: String,
     //pub txtbx: Vec<Textbox>, //grab from textbox.png
     pub font: Image, // grab from font.png
-    pub sheetpos: Rect, // depends on the character
-    pub roomloca: Vec2i, // for textbox, this is fixed for now. need to figure out for characters
-    pub frames: Vec<Rect>, // where the text will be on the screen?
-    pub cur_frame: usize, // idk what this is... magic number zero for now...
+    pub sheetpos: Rect, 
+    pub roomloca: Vec2i, 
+    pub frames: Vec<Rect>, 
+    pub cur_frame: usize, 
 }
 #[derive(Clone)]
 pub struct Textbox{
     pub txt: Vec<Text>,
     pub img: Image, //grab from textbox.png
-    pub sheetpos: Rect, // depends on the character
-    pub roomloca: Vec2i, // for textbox, this is fixed for now. need to figure out for characters
-    pub frames: Vec<Rect>, // where the text will be on the screen?
-    pub cur_frame: usize, // idk what this is... magic number zero for now...
+    pub sheetpos: Rect, 
+    pub roomloca: Vec2i,
+    pub frames: Vec<Rect>, 
+    pub cur_frame: usize, 
 }
 
 impl Textbox {
-    pub fn new(words: String) -> Self {
+    pub fn new(words: &str) -> Self {
         Self {
             //txt:Vec::<Text>::from([Text::new(words:String))]),
             //txt: Vec::<Text>::from([Text::new(words)]),
-            txt: build_text_vec(&words),
-            img: Image::from_file(std::path::Path::new("content/textbox2.png")),
+            txt: build_text_vec(words),
+            img: Image::from_file(std::path::Path::new("content/textbox.png")),
             sheetpos: Rect {
                 pos: Vec2i { x: 0, y: 0 },
                 sz: Vec2i { x: 266, y: 60 },
@@ -47,29 +45,15 @@ impl Textbox {
 }
 
 impl Text {
-    pub fn new(words: String, roomloca: Vec2i) -> Self {
+    pub fn new(words: &str, roomloca: Vec2i) -> Self {
         Self {
-            //words,
-            //txtbx: Vec::<Textbox>::from([Textbox::new(Image::from_file(std::path::Path::new("content/textbox.png")))]),
-            //([Textbox::new(Image::from_file(std::path::Path::new("content/textbox.png")))]),
             font: Image::from_file(std::path::Path::new("content/font.png")), 
             //font: Image::from_file(std::path::Path::new("engine1/engine2d/content/font.png")), // .parent()/engine2d/content
-            // sheetpos: Rect {
-            //     pos: Vec2i { x: 0, y: 0 },
-            //     sz: Vec2i { x: 6, y: 14 },
-            //     },
-            //my_str: words,
-            sheetpos: string_to_vec_rect(&words),
+            sheetpos: string_to_vec_rect(words),
 
             roomloca,
-            // frames: Vec::<Rect>::from([
-            //     Rect {
-            //     pos: Vec2i { x: 0, y: 0 },
-            //     sz: Vec2i { x: 6, y: 14 },
-            //     }
-            //     ]),
             frames: Vec::<Rect>::from([
-                string_to_vec_rect(&words)]),
+                string_to_vec_rect(words)]),
             cur_frame: 0,
             
         }
@@ -77,7 +61,7 @@ impl Text {
 
 }
 
-// 'letter_space'{ //2 pixel wide
+// 'letter_space'{ //1 pixel wide
 //     char = Rect {pos: Vec2i { x: 0, y: 0 },sz: Vec2i { x: 6, y: 14 },}
 
 // 'word_space'{ // 3 pixels
@@ -88,7 +72,7 @@ fn build_text_vec(words:&str) -> Vec::<Text>{
 
     for text_char in words.chars(){
         let s = &String::from(text_char);
-        let txt = Text::new(String::from(s), roomloca);
+        let txt = Text::new(s, roomloca);
         let pix = txt.sheetpos.sz.x;
         // check that there is room left in the line. if not, start next line
         if s == " " && roomloca.x > 230{
@@ -96,7 +80,7 @@ fn build_text_vec(words:&str) -> Vec::<Text>{
         } else{
             v.push(txt);
             roomloca = Vec2i{x: roomloca.x + pix, y: roomloca.y};
-            v.push(Text::new(String::from("letter_space"), Vec2i{x: roomloca.x+1, y: roomloca.y}));
+            v.push(Text::new("letter_space", Vec2i{x: roomloca.x+1, y: roomloca.y}));
             roomloca = Vec2i{x: roomloca.x+1, y: roomloca.y};
         }
     }

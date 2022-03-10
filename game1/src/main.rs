@@ -143,22 +143,20 @@ fn render2d(assets: &Assets, state: &mut State, fb2d: &mut Image) {
         state.sprite.cur_pos,
     );
 
-    // // add textbox and text
-    // for desc in state.rooms[state.room].desc.iter() {
-    //     //for txtbx in desc.txtbx.iter() {
-    //         fb2d.bitblt(
-    //         &desc.img,
-    //         desc.frames[desc.cur_frame],
-    //         desc.roomloca,
-    //     );
-    //     for txt in desc.txt.iter(){
-    //         fb2d.bitblt(
-    //             &txt.font,
-    //             txt.frames[txt.cur_frame],
-    //             txt.roomloca,
-    //         );
-    //     }
-    // }
+
+    // // textbox
+    fb2d.bitblt(
+        &state.textboxes[state.textbox].img,
+        state.textboxes[state.textbox].sheetpos,
+        state.textboxes[state.textbox].roomloca,
+    );
+    for txt in state.textboxes[state.textbox].txt.iter(){
+        fb2d.bitblt(
+            &txt.font,
+            txt.frames[txt.cur_frame],
+            txt.roomloca,
+        );
+    }
 
 }
 
@@ -166,8 +164,8 @@ fn main() {
 
      let house = Item {
          name: String::from("House"),
-         //desc: String::from("A modern house"),
-         desc: Vec::<Textbox>::from([Textbox::new(String::from("A modern house"))]),
+         desc: String::from("A modern house"),
+         //desc: Textbox::new("A modern house"),
          sheetpos: Rect {
                      pos: Vec2i { x: 0, y: 0 },
                      sz: Vec2i { x: 180, y: 110 },
@@ -190,11 +188,13 @@ fn main() {
         }
         ]),
         cur_frame: 0,
+        text_num: 5,
      };
 
     let tree = Item {
         name: String::from("Tree"),
-        desc: Vec::<Textbox>::from([Textbox::new(String::from("That's a nice tree."))]),
+        desc: String::from("That's a nice tree."),
+        //desc: Textbox::new("That's a nice tree."),
         sheetpos: Rect {
                     pos: Vec2i { x: 0, y: 119 }, // h = 32
                     sz: Vec2i { x: 49, y: 51 },
@@ -221,11 +221,12 @@ fn main() {
             }
         ]),
         cur_frame: 0,
+        text_num: 6,
     };
 
     let tree1 = Item {
         name: String::from("Tree"),
-        desc: Vec::<Textbox>::from([Textbox::new(String::from("That's a nice tree."))]),
+        desc: String::from("That's a nice tree."),
         sheetpos: Rect {
                     pos: Vec2i { x: 0, y: 119 },
                     sz: Vec2i { x: 49, y: 51 },
@@ -252,12 +253,12 @@ fn main() {
             }
         ]),
         cur_frame: 0,
+        text_num: 7,
     };
 
     let key = Item {
         name: String::from("Key"),
-        //desc: String::from("I wonder what this opens..."),
-        desc: Vec::<Textbox>::from([Textbox::new(String::from("I wonder what this opens..."))]),
+        desc: String::from("I wonder what this opens..."),
         sheetpos: Rect {
                     pos: Vec2i { x: 37, y: 40 },
                     sz: Vec2i { x: 3, y: 7 },
@@ -273,12 +274,12 @@ fn main() {
             sz: Vec2i { x: 3, y: 7 },
         }],
         cur_frame: 0,
+        text_num: 10,
     };
 
     let couch = Item {
         name: String::from("Couch"),
-        //desc: String::from("Just a couch"),
-        desc: Vec::<Textbox>::from([Textbox::new(String::from("Just a couch"))]),
+        desc: String::from("Just a couch"),
         sheetpos: Rect {
                     pos: Vec2i { x: 134, y: 0 },
                     sz: Vec2i { x: 69, y: 23 },
@@ -294,11 +295,12 @@ fn main() {
             sz: Vec2i { x: 69, y: 23 },
         }],
         cur_frame: 0,
+        text_num: 14,
     };
 
     let shelf = Item {
         name: String::from("Shelf"),
-        desc: Vec::<Textbox>::from([Textbox::new(String::from("I don't know any of these books"))]),
+        desc: String::from("I don't know any of these books"),
         sheetpos: Rect {
                     pos: Vec2i { x: 52, y: 25 },
                     sz: Vec2i { x: 41, y: 35 },
@@ -314,11 +316,12 @@ fn main() {
             sz: Vec2i { x: 41, y: 35 },
         }],
         cur_frame: 0,
+        text_num: 8,
     };
 
     let shrub = Item {
         name: String::from("Shrub"),
-        desc: Vec::<Textbox>::from([Textbox::new(String::from(""))]),
+        desc: String::from(""),
         sheetpos: Rect {
                     pos: Vec2i { x: 0, y: 70 },
                     sz: Vec2i { x: 22, y: 14 },
@@ -336,11 +339,11 @@ fn main() {
         }
         ]),
         cur_frame: 0,
+        text_num: 9,
     };
     let dresser = Item {
         name: String::from("Dresser"),
-        //desc: String::from("There's nothing in this."),
-        desc: Vec::<Textbox>::from([Textbox::new(String::from("There's nothing in this."))]),
+        desc: String::from("There's nothing in this."),
         sheetpos: Rect {
                     pos: Vec2i { x: 190, y: 28 },
                     sz: Vec2i { x: 31, y: 19 },
@@ -356,11 +359,12 @@ fn main() {
             sz: Vec2i { x: 31, y: 19 },
         }],
         cur_frame: 0,
+        text_num: 15,
     };
 
     let diary = Item {
         name: String::from("Diary"),
-        desc: Vec::<Textbox>::from([Textbox::new(String::from("Idk whose diary this is. It is locked."))]),
+        desc: String::from("Idk whose diary this is. It is locked."),
         sheetpos: Rect {
                     pos: Vec2i { x: 97, y: 104 },
                     sz: Vec2i { x: 8, y: 10 },
@@ -376,6 +380,7 @@ fn main() {
             sz: Vec2i { x: 8, y: 10 },
         }],
         cur_frame: 0,
+        text_num:11,
     };
 
     let hallway_door1 = Door {
@@ -463,7 +468,8 @@ fn main() {
         floor: Rect {
             pos: Vec2i { x: 52, y: 108 },
             sz: Vec2i { x: 217, y: 76 },
-        }
+        },
+        text_num: 2,
     };
 
     let bedroom_door1 = Door {
@@ -487,7 +493,7 @@ fn main() {
     let bed2 = Item {
         name: String::from("Bed"),
         //desc: String::from("There's nothing in this."),
-        desc: Vec::<Textbox>::from([Textbox::new(String::from("There's nothing in this."))]),
+        desc: String::from("There's nothing in this."),
         sheetpos: Rect {
                     pos: Vec2i { x: 130, y: 25 },
                     sz: Vec2i { x: 20, y: 39 },
@@ -503,14 +509,14 @@ fn main() {
             sz: Vec2i { x: 20, y: 39 },
         }],
         cur_frame: 0,
+        text_num: 13,
     };
 
     
 
     let bed1 = Item {
         name: String::from("Bed"),
-        //desc: String::from("There's nothing in this."),
-        desc: Vec::<Textbox>::from([Textbox::new(String::from("There's nothing in this."))]),
+        desc: String::from("There's nothing in this."),
         sheetpos: Rect {
                     pos: Vec2i { x: 0, y: 24 },
                     sz: Vec2i { x: 36, y: 40 },
@@ -526,31 +532,34 @@ fn main() {
             sz: Vec2i { x: 36, y: 40  },
         }],
         cur_frame: 0,
+        text_num: 12,
     };
 
 
     let bedroom1 = Room {
         name: String::from("Bedroom"),
-        desc: Vec::<Textbox>::from([Textbox::new(String::from("This is my bedroom"))]),
+        desc: String::from("This is my bedroom"),
         items: Vec::<Item>::from([bed1]),
         img: Image::from_file(std::path::Path::new("content/bedroom1.png")),
         doors: Vec::<Door>::from([bedroom_door1]),
         floor: Rect {
             pos: Vec2i { x: 69, y: 102 },
             sz: Vec2i { x: 86, y: 54 },
-        }
+        },
+        text_num: 3,
     };
 
     let bedroom2 = Room {
         name: String::from("Bedroom"),
-        desc: Vec::<Textbox>::from([Textbox::new(String::from("Idk whose room this is"))]),
+        desc: String::from("Idk whose room this is"),
         items: Vec::<Item>::from([bed2, diary]),
         img: Image::from_file(std::path::Path::new("content/bedroom2.png")),
         doors: Vec::<Door>::from([bedroom_door2]),
         floor: Rect {
             pos: Vec2i { x: 159, y: 102 },
             sz: Vec2i { x: 86, y: 54 },
-        }
+        },
+        text_num: 4,
     };
 
     let livingroom_door = Door {
@@ -563,15 +572,16 @@ fn main() {
     };
 
     let livingroom = Room {
-        name: String::from("Front Yard"),
-        desc: Vec::<Textbox>::from([Textbox::new(String::from("ughh"))]),
+        name: String::from("Living Room"),
+        desc: String::from("ughh"),
         items: Vec::<Item>::from([key, couch, shelf]),
         img: Image::from_file(std::path::Path::new("content/livingroom.png")),
         doors: Vec::<Door>::from([livingroom_door]),
         floor: Rect {
             pos: Vec2i { x: 52, y: 107 },
             sz: Vec2i { x: 217, y: 96 },
-        }
+        },
+        text_num: 1,
     };
 
     let door = Door {
@@ -585,14 +595,15 @@ fn main() {
 
     let yard = Room {
         name: String::from("Front Yard"),
-        desc: Vec::<Textbox>::from([Textbox::new(String::from("A mysterious field. Press space to use doors."))]),
+        desc: String::from("A mysterious field. Press space to use doors."),
         items: Vec::<Item>::from([tree, tree1, house, shrub]),
         img: Image::from_file(std::path::Path::new("content/grass.png")),
         doors: Vec::<Door>::from([door]),
         floor: Rect {
             pos: Vec2i { x: 0, y: 0 },
             sz: Vec2i { x: 320, y: 240 },
-        }
+        },
+        text_num: 0,
     };
     
     let assets = Assets {
@@ -622,12 +633,31 @@ fn main() {
 
     
     let state = State {
+        
         w: WIDTH,
         h: HEIGHT,
         fc: 0,
         color: 0,
         room: 0,
         rooms: vec![yard, livingroom, hallway, bedroom1, bedroom2],
+        textbox: 0,
+        textboxes: vec![Textbox::new("A mysterious field. Press SPACE to use doors and interact."), //yard
+                        Textbox::new("A livingroom?"), //livingroom
+                        Textbox::new("Ughh... there are so many doors"), //hallway
+                        Textbox::new("This is my bedroom"), //bedroom1
+                        Textbox::new("I don't know whose room this is..."), //bedroom2
+                        Textbox::new("A modern house"), //house
+                        Textbox::new("That's a nice tree."), //tree
+                        Textbox::new("That's a tree."), //tree1
+                        Textbox::new("I don't know any of these books"), //shelf
+                        Textbox::new("My favorite shrub."), //shrub
+                        Textbox::new("I got a key! I wonder what this opens..."), //key
+                        Textbox::new("I don't know whose diary this is. It is locked."), //diary
+                        Textbox::new("There's nothing in this."), //bed1
+                        Textbox::new("There's nothing in this."), //bed2
+                        Textbox::new("Just a couch"), //couch
+                        Textbox::new("There's nothing in this."), //dresser
+                        Textbox::new("It's not polite to read someone else's diary. GAME OVER.")], // diary end game
         sprite: sprite,
         inventory: vec![],
     };
