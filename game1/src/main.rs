@@ -560,18 +560,18 @@ fn main() {
         room: 0,
         rooms: vec![yard, livingroom, hallway, bedroom1, bedroom2],
         textbox: 0,
-        textboxes: vec![Textbox::new("A mysterious field. Press space to use doors."), //yard
-                        Textbox::new("ughh"), //livingroom
-                        Textbox::new("ughh"), //hallway
+        textboxes: vec![Textbox::new("A mysterious field. Press SPACE to use doors and interact."), //yard
+                        Textbox::new("A livingroom?"), //livingroom
+                        Textbox::new("Ughh... there are so many doors"), //hallway
                         Textbox::new("This is my bedroom"), //bedroom1
-                        Textbox::new("Idk whose room this is"), //bedroom2
+                        Textbox::new("I don't know whose room this is..."), //bedroom2
                         Textbox::new("A modern house"), //house
                         Textbox::new("That's a nice tree."), //tree
-                        Textbox::new("That's a nice tree."), //tree1
+                        Textbox::new("That's a tree."), //tree1
                         Textbox::new("I don't know any of these books"), //shelf
-                        Textbox::new(""), //shrub
-                        Textbox::new("You got the key! I wonder what this opens..."), //key
-                        Textbox::new("Idk whose diary this is. It is locked."), //diary
+                        Textbox::new("My favorite shrub."), //shrub
+                        Textbox::new("I got a key! I wonder what this opens..."), //key
+                        Textbox::new("I don't know whose diary this is. It is locked."), //diary
                         Textbox::new("There's nothing in this."), //bed1
                         Textbox::new("There's nothing in this."), //bed2
                         Textbox::new("Just a couch"), //couch

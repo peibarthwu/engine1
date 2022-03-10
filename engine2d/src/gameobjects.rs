@@ -127,7 +127,6 @@ impl State {
                     dx = 0;
                     dy = 0;
                 }
-                //self.textbox = self.room;
             }   
         }
 
@@ -143,7 +142,7 @@ impl State {
             pos: Vec2i { x: self.sprite.collider.pos.x as i32 - RADIUS as i32 /2, y: self.sprite.collider.pos.y as i32 - RADIUS as i32/2},
             sz: Vec2i { x: self.sprite.collider.sz.x as i32 + RADIUS as i32, y: self.sprite.collider.sz.y as i32 + RADIUS as i32},
         };
-
+        self.textbox = self.room;
         for item in self.rooms[self.room].items.iter_mut() {
             for rect in item.colliders.iter() {
                 if new_collider.touches(*rect){
@@ -163,7 +162,7 @@ impl State {
                 } 
             }   
         }
-       
+        
         for door in self.rooms[self.room].doors.iter() {
             if self.sprite.collider.touches(door.collider){
                 self.room = door.target;
