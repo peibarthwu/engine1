@@ -11,6 +11,8 @@ use winit::window::{Window, WindowBuilder};
 
 const WIDTH: usize = 320;
 const HEIGHT: usize = 240;
+const RADIUS: usize = 5;
+
 
 fn update_state(state: &mut State, mut dx: i32, mut dy: i32) -> () {
     let new_collider = Rect {
@@ -38,11 +40,48 @@ fn update_state(state: &mut State, mut dx: i32, mut dy: i32) -> () {
             }
         }
     }
-
     state.sprite.cur_pos.x += dx;
     state.sprite.cur_pos.y += dy;
     state.sprite.collider.pos.x += dx;
     state.sprite.collider.pos.y += dy;
+}
+
+fn interact(state: &mut State){
+    let new_collider = Rect {
+        pos: Vec2i { x: state.sprite.collider.pos.x as i32 - RADIUS as i32 /2, y: state.sprite.collider.pos.y as i32 - RADIUS as i32/2},
+        sz: Vec2i { x: state.sprite.collider.sz.x as i32 + RADIUS as i32, y: state.sprite.collider.sz.y as i32 + RADIUS as i32},
+    };
+
+    for item in state.rooms[state.room].items.iter_mut() {
+        for rect in item.colliders.iter_mut() {
+            if new_collider.touches(*rect){
+                println!("{:?}", item.name);
+                if item.name == "Key"{
+                    println!("You got the key");
+                    item.roomloca =  Vec2i { x: 10, y: 10};
+                    rect.pos =  Vec2i { x: 10, y: 10};
+
+                    state.inventory.push(item.name.clone());
+                }
+                if item.name == "Diary" && state.inventory.contains(&"Key".to_string()){
+                    println!("It's not polite to read someone else's diary. GAME OVER.");
+                    item.roomloca =  Vec2i { x: 10, y: 10};
+                    rect.pos =  Vec2i { x: 10, y: 10};
+                }
+               
+            }
+        }   
+    }
+   
+    for door in state.rooms[state.room].doors.iter() {
+        if state.sprite.collider.touches(door.collider){
+            state.room = door.target;
+            //get offset of collider
+            let offset = state.sprite.collider.pos.y - state.sprite.cur_pos.y;
+            state.sprite.cur_pos = door.spawn_pos;
+            state.sprite.collider.pos = Vec2i {x: door.spawn_pos.x, y: door.spawn_pos.y + offset};
+        }
+    }
 }
 
 
@@ -66,7 +105,7 @@ fn update(now_keys: &[bool], state: &mut State, assets:&Assets) {
         //state.update(1,0);
     }
     if now_keys[VirtualKeyCode::Space as usize] && (state.sprite.cur_pos.x + state.sprite.sheetpos.sz.x) < (WIDTH) as i32 {
-        state.interact();
+        interact(state);
     }
     // Exercise for the reader: Tie y to mouse movement
 
@@ -375,10 +414,50 @@ fn main() {
         spawn_pos: Vec2i { x: 194, y: 110 },
     };
 
+    let table = Item {
+        name: String::from("Table"),
+        desc: Vec::<Textbox>::from([Textbox::new(String::from("It seems like someone just had dinner"))]),
+        sheetpos: Rect {
+                    pos: Vec2i { x: 153, y: 87 },
+                    sz: Vec2i { x: 61, y: 28 },
+                },
+        roomloca: Vec2i { x: 128, y: 151 },
+        img: Image::from_file(std::path::Path::new("content/spritesheet.png")),
+        colliders: vec![Rect {
+            pos: Vec2i { x: 128, y: 97},
+            sz: Vec2i { x: 61, y: 18 },
+        }],
+        frames: vec![Rect {
+            pos: Vec2i { x: 153, y: 87 },
+            sz: Vec2i { x: 61, y: 28 },
+        }],
+        cur_frame: 0,
+    };
+
+    let shelf2 = Item {
+        name: String::from("Shelf"),
+        desc: Vec::<Textbox>::from([Textbox::new(String::from("It seems like someone just had dinner"))]),
+        sheetpos: Rect {
+                    pos: Vec2i { x: 94, y: 23 },
+                    sz: Vec2i { x: 31, y: 34 },
+                },
+        roomloca: Vec2i { x: 203, y: 89 },
+        img: Image::from_file(std::path::Path::new("content/spritesheet.png")),
+        colliders: vec![Rect {
+            pos: Vec2i { x: 203, y: 89},
+            sz: Vec2i { x: 30, y: 34 },
+        }],
+        frames: vec![Rect {
+            pos: Vec2i { x: 94, y: 23 },
+            sz: Vec2i { x: 31, y: 34 },
+        }],
+        cur_frame: 0,
+    };
+
     let hallway = Room {
         name: String::from("Hallway"),
         desc: Vec::<Textbox>::from([Textbox::new(String::from("ughh"))]),
-        items: Vec::<Item>::from([dresser]),
+        items: Vec::<Item>::from([dresser, table, shelf2]),
         img: Image::from_file(std::path::Path::new("content/hallway2.png")),
         doors: Vec::<Door>::from([hallway_door1, hallway_door2, hallway_door3, hallway_door4]),
         floor: Rect {
@@ -413,10 +492,10 @@ fn main() {
                     pos: Vec2i { x: 130, y: 25 },
                     sz: Vec2i { x: 20, y: 39 },
                 },
-        roomloca: Vec2i { x: 159, y: 92 },
+        roomloca: Vec2i { x: 159, y: 82 },
         img: Image::from_file(std::path::Path::new("content/spritesheet.png")),
         colliders: vec![Rect {
-            pos: Vec2i { x: 159, y: 92 },
+            pos: Vec2i { x: 159, y: 82 },
             sz: Vec2i { x: 18, y: 39 },
         }],
         frames: vec![Rect {
@@ -425,6 +504,8 @@ fn main() {
         }],
         cur_frame: 0,
     };
+
+    
 
     let bed1 = Item {
         name: String::from("Bed"),
@@ -499,7 +580,7 @@ fn main() {
             sz: Vec2i { x: 6, y: 50 },
         },
         target: 2,
-        spawn_pos: Vec2i { x: 153, y: 139 },
+        spawn_pos: Vec2i { x: 244, y: 122 },
     };
 
     let yard = Room {

@@ -89,41 +89,6 @@ pub struct State {
 }
 
 impl State {
-    pub fn update(&mut self, mut dx: i32, mut dy: i32) -> () {
-        let new_collider = Rect {
-            pos: Vec2i { x: self.sprite.collider.pos.x as i32 + dx, y: self.sprite.collider.pos.y as i32 + dy},
-            sz: self.sprite.collider.sz,
-        };
-       
-        if self.rooms[self.room].floor.contains(new_collider) == false {
-            dx = 0;
-            dy = 0;
-        }
-
-        for item in self.rooms[self.room].items.iter() {
-            for rect in item.colliders.iter() {
-                if new_collider.touches(*rect){
-                    println!("{:?}", item.name);
-                    if item.name == "Key"{
-                        println!("You got the key");
-                        // item.roomloca =  Vec2i { x: self.sprite.cur_pos.x as i32 + 10, y: self.sprite.cur_pos.x as i32 + 20};
-                        // item.collider.sz = Vec2i { x: 0, y: 0 };
-                        self.inventory.push(item.name.clone());
-                    }
-                    if item.name == "Diary" && self.inventory.contains(&"Key".to_string()){
-                        println!("It's not polite to read someone else's diary. GAME OVER.");
-                    }
-                    dx = 0;
-                    dy = 0;
-                }
-            }   
-        }
-
-        self.sprite.cur_pos.x += dx;
-        self.sprite.cur_pos.y += dy;
-        self.sprite.collider.pos.x += dx;
-        self.sprite.collider.pos.y += dy;
-    }
 
     pub fn interact(&mut self) -> () {
 
@@ -139,6 +104,7 @@ impl State {
                     if item.name == "Key"{
                         println!("You got the key");
                         item.roomloca =  Vec2i { x: 10, y: 10};
+
                         self.inventory.push(item.name.clone());
                     }
                     if item.name == "Diary" && self.inventory.contains(&"Key".to_string()){
