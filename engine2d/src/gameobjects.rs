@@ -4,7 +4,7 @@ use super::text::*;
 
 const RADIUS: usize = 5;
 
-
+#[derive(Clone)]
 pub struct Item {
     pub name: String, // E.g. "Antechamber"
     //pub desc: String, // E.g. "Dark wood paneling covers the walls.  The gilded northern doorway lies open."
@@ -114,6 +114,7 @@ impl State {
             for rect in item.colliders.iter() {
                 if new_collider.touches(*rect){
                     println!("{:?}", item.name);
+                    //self.textbox = item.text_num;
                     if item.name == "Key"{
                         println!("You got the key");
                         // item.roomloca =  Vec2i { x: self.sprite.cur_pos.x as i32 + 10, y: self.sprite.cur_pos.x as i32 + 20};
@@ -126,6 +127,7 @@ impl State {
                     dx = 0;
                     dy = 0;
                 }
+                //self.textbox = self.room;
             }   
         }
 
@@ -146,6 +148,7 @@ impl State {
             for rect in item.colliders.iter() {
                 if new_collider.touches(*rect){
                     println!("{:?}", item.name);
+                    self.textbox = item.text_num;
                     if item.name == "Key"{
                         println!("You got the key");
                         item.roomloca =  Vec2i { x: 10, y: 10};
@@ -153,10 +156,11 @@ impl State {
                     }
                     if item.name == "Diary" && self.inventory.contains(&"Key".to_string()){
                         println!("It's not polite to read someone else's diary. GAME OVER.");
+                        self.textbox= 16;
                         item.roomloca =  Vec2i { x: 10, y: 10};
                     }
                    
-                }
+                } 
             }   
         }
        

@@ -61,7 +61,7 @@ impl Text {
 
 }
 
-// 'letter_space'{ //2 pixel wide
+// 'letter_space'{ //1 pixel wide
 //     char = Rect {pos: Vec2i { x: 0, y: 0 },sz: Vec2i { x: 6, y: 14 },}
 
 // 'word_space'{ // 3 pixels
