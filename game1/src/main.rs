@@ -12,27 +12,57 @@ use winit::window::{Window, WindowBuilder};
 const WIDTH: usize = 320;
 const HEIGHT: usize = 240;
 
-const TILE: usize = 22;
+fn update_state(state: &mut State, mut dx: i32, mut dy: i32) -> () {
+    let new_collider = Rect {
+        pos: Vec2i { x: state.sprite.collider.pos.x as i32 + dx, y: state.sprite.collider.pos.y as i32 + dy},
+        sz: state.sprite.collider.sz,
+    };
+   
+    if state.rooms[state.room].floor.contains(new_collider) == false {
+        dx = 0;
+        dy = 0;
+    }
 
+    for item in state.rooms[state.room].items.iter() {
+        for rect in item.colliders.iter() {
+            if new_collider.touches(*rect){
+                dx = 0;
+                dy = 0;
+            }
+        }
+    }
 
+    state.sprite.cur_pos.x += dx;
+    state.sprite.cur_pos.y += dy;
+    state.sprite.collider.pos.x += dx;
+    state.sprite.collider.pos.y += dy;
+}
 
 
 fn update(now_keys: &[bool], state: &mut State, assets:&Assets) {
     // We can actually handle events now that we know what they all are.
     if now_keys[VirtualKeyCode::Up as usize] && state.sprite.cur_pos.y >= 0 {
-        state.update(0,-1);
+        update_state(state, 0, -1);
+        //state.update(0,-1);
     }
     if now_keys[VirtualKeyCode::Down as usize] && (state.sprite.cur_pos.y + state.sprite.sheetpos.sz.y) < (HEIGHT) as i32 {
-        state.update(0,1);
+        update_state(state, 0, 1);
+        //state.update(0,1);
 
     }
     if now_keys[VirtualKeyCode::Left as usize] && state.sprite.cur_pos.x >= 0 {
-        state.update(-1,0);
+        update_state(state, -1, 0);
+        //state.update(-1,0);
     }
     if now_keys[VirtualKeyCode::Right as usize] && (state.sprite.cur_pos.x + state.sprite.sheetpos.sz.x) < (WIDTH) as i32 {
-        state.update(1,0);
+        update_state(state, 1, 0);
+        //state.update(1,0);
+    }
+    if now_keys[VirtualKeyCode::Space as usize] && (state.sprite.cur_pos.x + state.sprite.sheetpos.sz.x) < (WIDTH) as i32 {
+        state.interact();
     }
     // Exercise for the reader: Tie y to mouse movement
+
 }
 
 fn render2d(assets: &Assets, state: &mut State, fb2d: &mut Image) {
@@ -57,6 +87,7 @@ fn render2d(assets: &Assets, state: &mut State, fb2d: &mut Image) {
             item.frames[item.cur_frame],
             item.roomloca,
         );
+        item.anim(state.fc);
     }
 
     // move sprite
@@ -115,10 +146,15 @@ fn main() {
                  },
          roomloca: Vec2i { x: 83, y: 47 },
          img: Image::from_file(std::path::Path::new("content/house.png")),
-         collider: Rect {
+         colliders: vec![Rect {
              pos: Vec2i { x: 83, y: 47},
-             sz: Vec2i { x: 180, y: 97 },
+             sz: Vec2i { x: 128, y: 32 },
             },
+            Rect {
+                pos: Vec2i { x: 83, y: 79},
+                sz: Vec2i { x: 180, y: 74 },
+               }
+            ],
         frames: Vec::<Rect>::from([
             Rect {
             pos: Vec2i { x: 0, y: 0 },
@@ -132,24 +168,60 @@ fn main() {
         name: String::from("Tree"),
         desc: Vec::<Textbox>::from([Textbox::new(String::from("That's a nice tree."))]),
         sheetpos: Rect {
-                    pos: Vec2i { x: 0, y: 119 },
+                    pos: Vec2i { x: 0, y: 119 }, // h = 32
                     sz: Vec2i { x: 49, y: 51 },
                 },
         roomloca: Vec2i { x: 10, y: 60 },
         img: Image::from_file(std::path::Path::new("content/spritesheet.png")),
-        collider: Rect {
+        colliders: vec![Rect {
             pos: Vec2i { x: 10, y: 60 },
-            sz: Vec2i { x: 49, y: 51 },
-        },
+            sz: Vec2i { x: 49, y: 32 },
+            },
+            Rect {
+                pos: Vec2i { x: 26, y: 92 },
+                sz: Vec2i { x: 11, y: 19 },
+            }
+            ],
         frames: Vec::<Rect>::from([
             Rect {
             pos: Vec2i { x: 0, y: 119 },
             sz: Vec2i { x: 49, y: 51 },
             },
-            // Rect {
-            //     pos: Vec2i { x: 51, y: 119 },
-            //     sz: Vec2i { x: 49, y: 51 },
-            // }
+            Rect {
+                pos: Vec2i { x: 51, y: 119 },
+                sz: Vec2i { x: 49, y: 51 },
+            }
+        ]),
+        cur_frame: 0,
+    };
+
+    let tree1 = Item {
+        name: String::from("Tree"),
+        desc: Vec::<Textbox>::from([Textbox::new(String::from("That's a nice tree."))]),
+        sheetpos: Rect {
+                    pos: Vec2i { x: 0, y: 119 },
+                    sz: Vec2i { x: 49, y: 51 },
+                },
+        roomloca: Vec2i { x: 30, y: 100 },
+        img: Image::from_file(std::path::Path::new("content/spritesheet.png")),
+        colliders: vec![Rect {
+            pos: Vec2i { x: 30, y: 100 },
+            sz: Vec2i { x: 49, y: 32 },
+            },
+            Rect {
+                pos: Vec2i { x: 46, y: 132 },
+                sz: Vec2i { x: 11, y: 19 },
+            }
+        ],
+        frames: Vec::<Rect>::from([
+            Rect {
+            pos: Vec2i { x: 0, y: 119 },
+            sz: Vec2i { x: 49, y: 51 },
+            },
+            Rect {
+                pos: Vec2i { x: 51, y: 119 },
+                sz: Vec2i { x: 49, y: 51 },
+            }
         ]),
         cur_frame: 0,
     };
@@ -162,12 +234,12 @@ fn main() {
                     pos: Vec2i { x: 37, y: 40 },
                     sz: Vec2i { x: 3, y: 7 },
                 },
-        roomloca: Vec2i { x: 300, y: 10 },
+        roomloca: Vec2i { x: 100, y: 150 },
         img: Image::from_file(std::path::Path::new("content/spritesheet.png")),
-        collider: Rect {
-            pos: Vec2i { x: 100, y: 10 },
+        colliders: vec![Rect {
+            pos: Vec2i { x: 100, y: 150 },
             sz: Vec2i { x: 3, y: 7 },
-        },
+        }],
         frames: vec![Rect {
             pos: Vec2i { x: 37, y: 40 },
             sz: Vec2i { x: 3, y: 7 },
@@ -185,10 +257,10 @@ fn main() {
                 },
         roomloca: Vec2i { x: 200, y: 100 },
         img: Image::from_file(std::path::Path::new("content/spritesheet.png")),
-        collider: Rect {
+        colliders: vec![Rect {
             pos: Vec2i { x: 200, y: 100 },
             sz: Vec2i { x: 69, y: 23 },
-        },
+        }],
         frames: vec![Rect {
             pos: Vec2i { x: 134, y: 0 },
             sz: Vec2i { x: 69, y: 23 },
@@ -205,10 +277,10 @@ fn main() {
                 },
         roomloca: Vec2i { x: 53, y: 89 },
         img: Image::from_file(std::path::Path::new("content/spritesheet.png")),
-        collider: Rect {
+        colliders: vec![Rect {
             pos: Vec2i { x: 53, y: 89 },
             sz: Vec2i { x: 1, y: 1 },
-        },
+        }],
         frames: vec![Rect {
             pos: Vec2i { x: 52, y: 25 },
             sz: Vec2i { x: 41, y: 35 },
@@ -223,12 +295,12 @@ fn main() {
                     pos: Vec2i { x: 0, y: 70 },
                     sz: Vec2i { x: 22, y: 14 },
                 },
-        roomloca: Vec2i { x: 200, y: 200 },
+        roomloca: Vec2i { x: 300, y: 0 },
         img: Image::from_file(std::path::Path::new("content/spritesheet.png")),
-        collider: Rect {
-            pos: Vec2i { x: 200, y: 200 },
+        colliders: vec![Rect {
+            pos: Vec2i { x: 300, y: 0 },
             sz: Vec2i { x: 22, y: 14 },
-        },
+        }],
         frames: Vec::<Rect>::from([
             Rect {
                 pos: Vec2i { x: 0, y: 70 },
@@ -236,7 +308,6 @@ fn main() {
         }
         ]),
         cur_frame: 0,
-
     };
     let dresser = Item {
         name: String::from("Dresser"),
@@ -248,10 +319,10 @@ fn main() {
                 },
         roomloca: Vec2i { x: 53, y: 100 },
         img: Image::from_file(std::path::Path::new("content/spritesheet.png")),
-        collider: Rect {
+        colliders: vec![Rect {
             pos: Vec2i { x: 53, y: 100 },
             sz: Vec2i { x: 1, y: 1 },
-        },
+        }],
         frames: vec![Rect {
             pos: Vec2i { x: 190, y: 28 },
             sz: Vec2i { x: 31, y: 19 },
@@ -266,12 +337,12 @@ fn main() {
                     pos: Vec2i { x: 97, y: 104 },
                     sz: Vec2i { x: 8, y: 10 },
                 },
-        roomloca: Vec2i { x: 600, y: 22 },
+        roomloca: Vec2i { x: 200, y: 200 },
         img: Image::from_file(std::path::Path::new("content/spritesheet.png")),
-        collider: Rect {
-            pos: Vec2i { x: 136, y: 22 },
+        colliders: vec![Rect {
+            pos: Vec2i { x: 200, y: 200 },
             sz: Vec2i { x: 8, y: 10 },
-        },
+        }],
         frames: vec![Rect {
             pos: Vec2i { x: 97, y: 104 },
             sz: Vec2i { x: 8, y: 10 },
@@ -321,12 +392,12 @@ fn main() {
     let livingroom = Room {
         name: String::from("Front Yard"),
         desc: Vec::<Textbox>::from([Textbox::new(String::from("ughh"))]),
-        items: Vec::<Item>::from([key, couch]),
+        items: Vec::<Item>::from([key, couch, shelf]),
         img: Image::from_file(std::path::Path::new("content/room3.png")),
         doors: Vec::<Door>::from([livingroom_door]),
         floor: Rect {
-            pos: Vec2i { x: 52, y: 119 },
-            sz: Vec2i { x: 217, y: 92 },
+            pos: Vec2i { x: 52, y: 97 },
+            sz: Vec2i { x: 217, y: 102 },
         }
     };
 
@@ -336,13 +407,13 @@ fn main() {
             sz: Vec2i { x: 6, y: 50 },
         },
         target: 1,
-        spawn_pos: Vec2i { x: 146, y: 111 },
+        spawn_pos: Vec2i { x: 153, y: 139 },
     };
 
     let yard = Room {
         name: String::from("Front Yard"),
-        desc: Vec::<Textbox>::from([Textbox::new(String::from("A mysterious field"))]),
-        items: Vec::<Item>::from([tree, house, shrub]),
+        desc: Vec::<Textbox>::from([Textbox::new(String::from("A mysterious field. Press space to use doors."))]),
+        items: Vec::<Item>::from([tree, tree1, house, shrub]),
         img: Image::from_file(std::path::Path::new("content/grass.png")),
         doors: Vec::<Door>::from([door]),
         floor: Rect {
@@ -369,10 +440,10 @@ fn main() {
             sz: Vec2i { x: 12, y: 37 },
         },
         img: Image::from_file(std::path::Path::new("content/spritesheet.png")),
-        cur_pos: Vec2i { x: 0, y: 0 },
+        cur_pos: Vec2i { x: 300, y: 200 },
         collider: Rect {
-            pos: Vec2i { x: 0, y: 27 },
-            sz: Vec2i {x: 12, y: 10},
+            pos: Vec2i { x: 300, y: 220 },
+            sz: Vec2i {x: 12, y: 17},
         },
     };
 
