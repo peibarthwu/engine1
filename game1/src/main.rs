@@ -23,6 +23,9 @@ fn update_state(state: &mut State, mut dx: i32, mut dy: i32) -> () {
     if dx>0 {
         state.sprite.sheetpos.pos.x = 39;
     }
+    else if dx<0{
+        state.sprite.sheetpos.pos.x = 51;
+    }
     else {
         state.sprite.sheetpos.pos.x = 28;
     }
@@ -51,21 +54,36 @@ fn interact(state: &mut State){
         pos: Vec2i { x: state.sprite.collider.pos.x as i32 - RADIUS as i32 /2, y: state.sprite.collider.pos.y as i32 - RADIUS as i32/2},
         sz: Vec2i { x: state.sprite.collider.sz.x as i32 + RADIUS as i32, y: state.sprite.collider.sz.y as i32 + RADIUS as i32},
     };
-
+    if !state.inventory.contains(&"Key".to_string()){
+        state.textbox = state.room;
+    }
+    else if !state.inventory.contains(&"Diary".to_string()){
+        state.textbox = 10;
+    }
+    else{
+        state.textbox = 16;
+    }
     for item in state.rooms[state.room].items.iter_mut() {
         for rect in item.colliders.iter_mut() {
             if new_collider.touches(*rect){
                 println!("{:?}", item.name);
+                state.textbox = item.text_num;
+                if item.name == "Bunny"{
+                    state.textbox= 20;
+                    item.frames[0].pos =  Vec2i { x: 100, y: 60};
+                    state.inventory.push(item.name.clone());
+                }
                 if item.name == "Key"{
                     println!("You got the key");
                     item.roomloca =  Vec2i { x: 10, y: 10};
                     rect.pos =  Vec2i { x: 10, y: 10};
-
                     state.inventory.push(item.name.clone());
                 }
                 if item.name == "Diary" && state.inventory.contains(&"Key".to_string()){
                     println!("It's not polite to read someone else's diary. GAME OVER.");
                     item.roomloca =  Vec2i { x: 10, y: 10};
+                    state.inventory.push(item.name.clone());
+                    state.textbox= 16;
                     rect.pos =  Vec2i { x: 10, y: 10};
                 }
                
@@ -75,11 +93,17 @@ fn interact(state: &mut State){
    
     for door in state.rooms[state.room].doors.iter() {
         if state.sprite.collider.touches(door.collider){
-            state.room = door.target;
-            //get offset of collider
-            let offset = state.sprite.collider.pos.y - state.sprite.cur_pos.y;
-            state.sprite.cur_pos = door.spawn_pos;
-            state.sprite.collider.pos = Vec2i {x: door.spawn_pos.x, y: door.spawn_pos.y + offset};
+            //check if they have the front door key
+            if state.inventory.contains(&"Bunny".to_string()){
+                state.room = door.target;
+                //get offset of collider
+                let offset = state.sprite.collider.pos.y - state.sprite.cur_pos.y;
+                state.sprite.cur_pos = door.spawn_pos;
+                state.sprite.collider.pos = Vec2i {x: door.spawn_pos.x, y: door.spawn_pos.y + offset};
+            }
+            else{
+                state.textbox= 21; //print door is locked
+            }
         }
     }
 }
@@ -144,7 +168,7 @@ fn render2d(assets: &Assets, state: &mut State, fb2d: &mut Image) {
     );
 
 
-    // // textbox
+    //textbox
     fb2d.bitblt(
         &state.textboxes[state.textbox].img,
         state.textboxes[state.textbox].sheetpos,
@@ -256,6 +280,29 @@ fn main() {
         text_num: 7,
     };
 
+    let fence = Item {
+        name: String::from("Fence"),
+        desc: String::from("A pixel fence"),
+        //desc: Textbox::new("That's a nice tree."),
+        sheetpos: Rect {
+                    pos: Vec2i { x: 0, y: 0 }, 
+                    sz: Vec2i { x: 320, y: 22 },
+                },
+        roomloca: Vec2i { x: 0, y: 218 },
+        img: Image::from_file(std::path::Path::new("content/fence.png")),
+        colliders: vec![Rect {
+            pos: Vec2i {x: 0, y: 218 },
+            sz: Vec2i { x: 320, y: 22 },
+            }],
+        frames: Vec::<Rect>::from([
+            Rect {
+                pos: Vec2i { x: 0, y: 0 },
+                sz: Vec2i { x: 320, y: 22 },
+            }]),
+        cur_frame: 0,
+        text_num: 19,
+    };
+
     let key = Item {
         name: String::from("Key"),
         desc: String::from("I wonder what this opens..."),
@@ -303,17 +350,17 @@ fn main() {
         desc: String::from("I don't know any of these books"),
         sheetpos: Rect {
                     pos: Vec2i { x: 52, y: 25 },
-                    sz: Vec2i { x: 41, y: 35 },
+                    sz: Vec2i { x: 41, y: 32 },
                 },
         roomloca: Vec2i { x: 53, y: 89 },
         img: Image::from_file(std::path::Path::new("content/spritesheet.png")),
         colliders: vec![Rect {
             pos: Vec2i { x: 53, y: 89 },
-            sz: Vec2i {  x: 41, y: 35 },
+            sz: Vec2i {  x: 41, y: 32 },
         }],
         frames: vec![Rect {
             pos: Vec2i { x: 52, y: 25 },
-            sz: Vec2i { x: 41, y: 35 },
+            sz: Vec2i { x: 41, y: 32 },
         }],
         cur_frame: 0,
         text_num: 8,
@@ -323,24 +370,48 @@ fn main() {
         name: String::from("Shrub"),
         desc: String::from(""),
         sheetpos: Rect {
-                    pos: Vec2i { x: 0, y: 70 },
-                    sz: Vec2i { x: 22, y: 14 },
+                    pos: Vec2i { x: 0, y: 69 },
+                    sz: Vec2i { x: 68, y: 14 },
                 },
-        roomloca: Vec2i { x: 300, y: 0 },
+        roomloca: Vec2i { x: 181, y: 150 },
         img: Image::from_file(std::path::Path::new("content/spritesheet.png")),
         colliders: vec![Rect {
-            pos: Vec2i { x: 300, y: 0 },
-            sz: Vec2i { x: 22, y: 14 },
+            pos: Vec2i { x: 181, y: 150},
+            sz: Vec2i { x: 68, y: 14 },
         }],
         frames: Vec::<Rect>::from([
             Rect {
-                pos: Vec2i { x: 0, y: 70 },
-                sz: Vec2i { x: 22, y: 14 },
-        }
+                pos: Vec2i { x: 0, y: 69 },
+                sz: Vec2i { x: 68, y: 14 },
+            }
         ]),
         cur_frame: 0,
         text_num: 9,
     };
+
+    let bunny = Item {
+        name: String::from("Bunny"),
+        desc: String::from(""),
+        sheetpos: Rect {
+                    pos: Vec2i { x: 69, y: 60 },
+                    sz: Vec2i { x: 28, y: 28 },
+                },
+        roomloca: Vec2i { x: 280, y: 100 },
+        img: Image::from_file(std::path::Path::new("content/spritesheet.png")),
+        colliders: vec![Rect {
+            pos: Vec2i { x: 280, y: 100 },
+            sz: Vec2i { x: 28, y: 28},
+        }],
+        frames: Vec::<Rect>::from([
+            Rect {
+                pos: Vec2i { x: 69, y: 60 },
+                sz: Vec2i { x: 28, y: 28 },
+            },
+        ]),
+        cur_frame: 0,
+        text_num: 9,
+    };
+
     let dresser = Item {
         name: String::from("Dresser"),
         desc: String::from("There's nothing in this."),
@@ -352,7 +423,7 @@ fn main() {
         img: Image::from_file(std::path::Path::new("content/spritesheet.png")),
         colliders: vec![Rect {
             pos: Vec2i { x: 53, y: 100 },
-            sz: Vec2i { x: 1, y: 1 },
+            sz: Vec2i { x: 31, y: 19 },
         }],
         frames: vec![Rect {
             pos: Vec2i { x: 190, y: 28 },
@@ -421,7 +492,7 @@ fn main() {
 
     let table = Item {
         name: String::from("Table"),
-        desc: Vec::<Textbox>::from([Textbox::new(String::from("It seems like someone just had dinner"))]),
+        desc: String::from("It looks like someone just had dinner."),
         sheetpos: Rect {
                     pos: Vec2i { x: 153, y: 87 },
                     sz: Vec2i { x: 61, y: 28 },
@@ -429,7 +500,7 @@ fn main() {
         roomloca: Vec2i { x: 128, y: 151 },
         img: Image::from_file(std::path::Path::new("content/spritesheet.png")),
         colliders: vec![Rect {
-            pos: Vec2i { x: 128, y: 97},
+            pos: Vec2i { x: 128, y: 160},
             sz: Vec2i { x: 61, y: 18 },
         }],
         frames: vec![Rect {
@@ -437,11 +508,12 @@ fn main() {
             sz: Vec2i { x: 61, y: 28 },
         }],
         cur_frame: 0,
+        text_num: 17,
     };
 
     let shelf2 = Item {
         name: String::from("Shelf"),
-        desc: Vec::<Textbox>::from([Textbox::new(String::from("It seems like someone just had dinner"))]),
+        desc: String::from("I don't know any of these books."),
         sheetpos: Rect {
                     pos: Vec2i { x: 94, y: 23 },
                     sz: Vec2i { x: 31, y: 34 },
@@ -457,11 +529,12 @@ fn main() {
             sz: Vec2i { x: 31, y: 34 },
         }],
         cur_frame: 0,
+        text_num: 18,
     };
 
     let hallway = Room {
         name: String::from("Hallway"),
-        desc: Vec::<Textbox>::from([Textbox::new(String::from("ughh"))]),
+        desc: String::from("There are so many doors."),
         items: Vec::<Item>::from([dresser, table, shelf2]),
         img: Image::from_file(std::path::Path::new("content/hallway2.png")),
         doors: Vec::<Door>::from([hallway_door1, hallway_door2, hallway_door3, hallway_door4]),
@@ -596,7 +669,7 @@ fn main() {
     let yard = Room {
         name: String::from("Front Yard"),
         desc: String::from("A mysterious field. Press space to use doors."),
-        items: Vec::<Item>::from([tree, tree1, house, shrub]),
+        items: Vec::<Item>::from([tree, tree1, house, shrub, fence, bunny]),
         img: Image::from_file(std::path::Path::new("content/grass.png")),
         doors: Vec::<Door>::from([door]),
         floor: Rect {
@@ -624,9 +697,9 @@ fn main() {
             sz: Vec2i { x: 12, y: 37 },
         },
         img: Image::from_file(std::path::Path::new("content/spritesheet.png")),
-        cur_pos: Vec2i { x: 300, y: 200 },
+        cur_pos: Vec2i { x: 300, y: 180 },
         collider: Rect {
-            pos: Vec2i { x: 300, y: 220 },
+            pos: Vec2i { x: 300, y: 200 },
             sz: Vec2i {x: 12, y: 17},
         },
     };
@@ -641,23 +714,29 @@ fn main() {
         room: 0,
         rooms: vec![yard, livingroom, hallway, bedroom1, bedroom2],
         textbox: 0,
-        textboxes: vec![Textbox::new("A mysterious field. Press SPACE to use doors and interact."), //yard
-                        Textbox::new("A livingroom?"), //livingroom
+        textboxes: vec![Textbox::new("What a mysterious field... Press SPACE to use doors and interact."), //yard
+                        Textbox::new("A livingroom? "), //livingroom
                         Textbox::new("Ughh... there are so many doors"), //hallway
-                        Textbox::new("This is my bedroom"), //bedroom1
+                        Textbox::new("This almost looks like my bedroom. But I've never been here before."), //bedroom1
                         Textbox::new("I don't know whose room this is..."), //bedroom2
-                        Textbox::new("A modern house"), //house
+                        Textbox::new("A modern house. I wonder who lives here."), //house
                         Textbox::new("That's a nice tree."), //tree
                         Textbox::new("That's a tree."), //tree1
                         Textbox::new("I don't know any of these books"), //shelf
-                        Textbox::new("My favorite shrub."), //shrub
-                        Textbox::new("I got a key! I wonder what this opens..."), //key
+                        Textbox::new("My favorite shrubs."), //shrub
+                        Textbox::new("I got another key! I wonder what this opens..."), //key
                         Textbox::new("I don't know whose diary this is. It is locked."), //diary
-                        Textbox::new("There's nothing in this."), //bed1
-                        Textbox::new("There's nothing in this."), //bed2
-                        Textbox::new("Just a couch"), //couch
-                        Textbox::new("There's nothing in this."), //dresser
-                        Textbox::new("It's not polite to read someone else's diary. GAME OVER.")], // diary end game
+                        Textbox::new("Someone made the bed."), //bed1
+                        Textbox::new("I'm not sure who sleeps here..."), //bed2
+                        Textbox::new("Just a couch. I don't feel like sitting down."), //couch
+                        Textbox::new("There's nothing in this. I wonder why they have this dresser if they just keep it empty."), //dresser
+                        Textbox::new("It's not polite to read someone else's diary. GAME OVER."), // diary end game
+                        Textbox::new("It looks like someone just had dinner"), // table
+                        Textbox::new("These are all my favorite books! I think I would get along with whoever owns them."), // shelf
+                        Textbox::new("A pixel fence."), // fence
+                        Textbox::new("This shrub almost looks like my old rabbit. It gave me a key! I wonder what this opens."), // 20: bunny
+                        Textbox::new("The house is locked.")], // 
+
         sprite: sprite,
         inventory: vec![],
     };

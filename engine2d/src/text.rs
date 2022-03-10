@@ -26,7 +26,7 @@ impl Textbox {
             //txt:Vec::<Text>::from([Text::new(words:String))]),
             //txt: Vec::<Text>::from([Text::new(words)]),
             txt: build_text_vec(words),
-            img: Image::from_file(std::path::Path::new("content/textbox.png")),
+            img: Image::from_file(std::path::Path::new("content/textbox2.png")),
             sheetpos: Rect {
                 pos: Vec2i { x: 0, y: 0 },
                 sz: Vec2i { x: 266, y: 60 },
