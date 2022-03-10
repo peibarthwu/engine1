@@ -17,13 +17,6 @@ pub struct Item {
     pub cur_frame: usize,
 }
 
-impl Item{
-    pub fn update_pos(&mut self, x_pos: usize, y_pos: usize){
-        self.roomloca =  Vec2i { x: x_pos as i32, y:  y_pos as i32}; 
-    }
-}
-
-
 // #[derive(PartialEq, Eq, Clone)]
 pub struct Tile {
     pub sheetpos: Rect,
@@ -145,12 +138,12 @@ impl State {
                     println!("{:?}", item.name);
                     if item.name == "Key"{
                         println!("You got the key");
-                        // item.update_pos(0,0);
                         item.roomloca =  Vec2i { x: 10, y: 10};
                         self.inventory.push(item.name.clone());
                     }
                     if item.name == "Diary" && self.inventory.contains(&"Key".to_string()){
                         println!("It's not polite to read someone else's diary. GAME OVER.");
+                        item.roomloca =  Vec2i { x: 10, y: 10};
                     }
                    
                 }
