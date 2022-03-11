@@ -4,12 +4,16 @@ use super::text::*;
 
 const RADIUS: usize = 5;
 
+pub enum GameMode{
+    Play,
+    Menu,
+    Animation,
+    Transition,
+}
+
 #[derive(Clone)]
 pub struct Item {
     pub name: String, // E.g. "Antechamber"
-    //pub desc: String, // E.g. "Dark wood paneling covers the walls.  The gilded northern doorway lies open."
-    //pub desc: Vec<Textbox>, 
-    //pub desc: Textbox,
     pub desc: String,
     pub sheetpos: Rect, //make this a usize
     pub roomloca: Vec2i,
@@ -80,7 +84,7 @@ pub struct Door {
 }
 
 pub struct Assets {
-    pub img: Image,
+    pub menuimg: Vec<Image>,
     pub colors: [Color;6]
 }
 
@@ -91,11 +95,13 @@ pub struct State {
     pub color: usize,
     pub room: usize,
     pub rooms: Vec<Room>,
-    // pub textbox: Textbox,
     pub textbox: usize,
     pub textboxes: Vec<Textbox>,
     pub sprite: Sprite,
     pub inventory: Vec<String>,
+    pub mode: GameMode,
+    pub menuidx: i32,
+    pub loss: bool,
 }
 
 impl State {

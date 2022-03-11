@@ -5,9 +5,7 @@ use engine2d::gameobjects::*;
 
 
 
-use winit::event::{Event, VirtualKeyCode, WindowEvent};
-use winit::event_loop::{ControlFlow, EventLoop};
-use winit::window::{Window, WindowBuilder};
+use winit::event::{VirtualKeyCode};
 
 const WIDTH: usize = 320;
 const HEIGHT: usize = 240;
@@ -50,19 +48,24 @@ fn update_state(state: &mut State, mut dx: i32, mut dy: i32) -> () {
 }
 
 fn interact(state: &mut State){
+    if state.loss{
+        state.menuidx = 0;
+        state.mode = GameMode::Menu;
+        state.inventory = vec![];
+        state.sprite.cur_pos = Vec2i { x: 300, y: 180 };
+        state.sprite.collider.pos = Vec2i { x: 300, y: 200 };
+        state.room = 0;
+        state.textbox= 0;
+        state.loss = false;
+        return;
+    }
     let new_collider = Rect {
         pos: Vec2i { x: state.sprite.collider.pos.x as i32 - RADIUS as i32 /2, y: state.sprite.collider.pos.y as i32 - RADIUS as i32/2},
         sz: Vec2i { x: state.sprite.collider.sz.x as i32 + RADIUS as i32, y: state.sprite.collider.sz.y as i32 + RADIUS as i32},
     };
-    if !state.inventory.contains(&"Key".to_string()){
+    
         state.textbox = state.room;
-    }
-    else if !state.inventory.contains(&"Diary".to_string()){
-        state.textbox = 10;
-    }
-    else{
-        state.textbox = 16;
-    }
+    
     for item in state.rooms[state.room].items.iter_mut() {
         for rect in item.colliders.iter_mut() {
             if new_collider.touches(*rect){
@@ -75,16 +78,18 @@ fn interact(state: &mut State){
                 }
                 if item.name == "Key"{
                     println!("You got the key");
-                    item.roomloca =  Vec2i { x: 10, y: 10};
-                    rect.pos =  Vec2i { x: 10, y: 10};
+                    //item.roomloca =  Vec2i { x: 10, y: 10};
+                    //rect.pos =  Vec2i { x: 10, y: 10};
                     state.inventory.push(item.name.clone());
                 }
                 if item.name == "Diary" && state.inventory.contains(&"Key".to_string()){
                     println!("It's not polite to read someone else's diary. GAME OVER.");
-                    item.roomloca =  Vec2i { x: 10, y: 10};
+                    // item.roomloca =  Vec2i { x: 10, y: 10};
+                    // rect.pos =  Vec2i { x: 10, y: 10};
                     state.inventory.push(item.name.clone());
                     state.textbox= 16;
-                    rect.pos =  Vec2i { x: 10, y: 10};
+                    state.loss = true;
+
                 }
                
             }
@@ -106,81 +111,131 @@ fn interact(state: &mut State){
             }
         }
     }
+
+    state.mode = GameMode::Play;
 }
 
 
-fn update(now_keys: &[bool], state: &mut State, assets:&Assets) {
+fn update(now_keys: &[bool], prev_keys: &[bool], state: &mut State, assets:&Assets) {
     // We can actually handle events now that we know what they all are.
-    if now_keys[VirtualKeyCode::Up as usize] && state.sprite.cur_pos.y >= 0 {
-        update_state(state, 0, -1);
-        //state.update(0,-1);
+    match state.mode {
+        GameMode::Play => {
+            if now_keys[VirtualKeyCode::Up as usize] && state.sprite.cur_pos.y >= 0 {
+                update_state(state, 0, -1);
+            }
+            if now_keys[VirtualKeyCode::Down as usize] && (state.sprite.cur_pos.y + state.sprite.sheetpos.sz.y) < (HEIGHT) as i32 {
+                update_state(state, 0, 1);
+        
+            }
+            if now_keys[VirtualKeyCode::Left as usize] && state.sprite.cur_pos.x >= 0 {
+                update_state(state, -1, 0);
+            }
+            if now_keys[VirtualKeyCode::Right as usize] && (state.sprite.cur_pos.x + state.sprite.sheetpos.sz.x) < (WIDTH) as i32 {
+                update_state(state, 1, 0);
+            }
+            if now_keys[VirtualKeyCode::Space as usize] && !prev_keys[VirtualKeyCode::Space as usize] && (state.sprite.cur_pos.x + state.sprite.sheetpos.sz.x) < (WIDTH) as i32 {
+                interact(state);
+            }
+            // ...
+        }
+        GameMode::Menu => {
+            if now_keys[VirtualKeyCode::Space as usize] && !prev_keys[VirtualKeyCode::Space as usize]{
+                if state.menuidx < assets.menuimg.len() as i32 -1{
+                    state.menuidx += 1;
+                }
+                else{
+                    state.mode = GameMode::Play;
+                }
+            }
+            // ...
+        }
+        GameMode::Animation => {
+            // ...
+        }
+        GameMode::Transition => {
+            
+            // ...
+        }
     }
-    if now_keys[VirtualKeyCode::Down as usize] && (state.sprite.cur_pos.y + state.sprite.sheetpos.sz.y) < (HEIGHT) as i32 {
-        update_state(state, 0, 1);
-        //state.update(0,1);
 
-    }
-    if now_keys[VirtualKeyCode::Left as usize] && state.sprite.cur_pos.x >= 0 {
-        update_state(state, -1, 0);
-        //state.update(-1,0);
-    }
-    if now_keys[VirtualKeyCode::Right as usize] && (state.sprite.cur_pos.x + state.sprite.sheetpos.sz.x) < (WIDTH) as i32 {
-        update_state(state, 1, 0);
-        //state.update(1,0);
-    }
-    if now_keys[VirtualKeyCode::Space as usize] && (state.sprite.cur_pos.x + state.sprite.sheetpos.sz.x) < (WIDTH) as i32 {
-        interact(state);
-    }
+   
+    
     // Exercise for the reader: Tie y to mouse movement
 
 }
 
 fn render2d(assets: &Assets, state: &mut State, fb2d: &mut Image) {
-    fb2d.clear(Color(128, 64, 64, 255));
+    fb2d.clear(Color(0, 0, 0, 255));
     state.fc += 1;
-    fb2d.bitblt(
-        &state.rooms[state.room].img,
-        Rect {
-            pos: Vec2i { x: 0, y: 0 },
-            sz: Vec2i { x: 320, y: 240 },
-        },
-        Vec2i {
-            x: 0,
-            y: 0,
-        },
-    );
+    match state.mode {
+        GameMode::Play => {
+            fb2d.bitblt(
+                &state.rooms[state.room].img,
+                Rect {
+                    pos: Vec2i { x: 0, y: 0 },
+                    sz: Vec2i { x: 320, y: 240 },
+                },
+                Vec2i {
+                    x: 0,
+                    y: 0,
+                },
+            );
+            
+            // //add assets on top
+            for item in state.rooms[state.room].items.iter_mut() {
+                fb2d.bitblt(
+                    &item.img,
+                    item.frames[item.cur_frame],
+                    item.roomloca,
+                );
+                item.anim(state.fc);
+            }
+        
+            // move sprite
+            fb2d.bitblt(
+                &state.sprite.img,
+                state.sprite.sheetpos,
+                state.sprite.cur_pos,
+            );
+        
+        
+            //textbox
+            fb2d.bitblt(
+                &state.textboxes[state.textbox].img,
+                state.textboxes[state.textbox].sheetpos,
+                state.textboxes[state.textbox].roomloca,
+            );
+            for txt in state.textboxes[state.textbox].txt.iter(){
+                fb2d.bitblt(
+                    &txt.font,
+                    txt.frames[txt.cur_frame],
+                    txt.roomloca,
+                );
+            }
+        }
+        GameMode::Menu => {
+            fb2d.bitblt(
+                &assets.menuimg[state.menuidx as usize],
+                Rect {
+                    pos: Vec2i { x: 0, y: 0 },
+                    sz: Vec2i { x: 320, y: 240 },
+                },
+                Vec2i {
+                    x: 0,
+                    y: 0,
+                },
+            );
+        }
+        GameMode::Animation => {
+            // ...
+        }
+        GameMode::Transition => {
+            // ...
+        }
+    }
+
+
     
-    // //add assets on top
-    for item in state.rooms[state.room].items.iter_mut() {
-        fb2d.bitblt(
-            &item.img,
-            item.frames[item.cur_frame],
-            item.roomloca,
-        );
-        item.anim(state.fc);
-    }
-
-    // move sprite
-    fb2d.bitblt(
-        &state.sprite.img,
-        state.sprite.sheetpos,
-        state.sprite.cur_pos,
-    );
-
-
-    //textbox
-    fb2d.bitblt(
-        &state.textboxes[state.textbox].img,
-        state.textboxes[state.textbox].sheetpos,
-        state.textboxes[state.textbox].roomloca,
-    );
-    for txt in state.textboxes[state.textbox].txt.iter(){
-        fb2d.bitblt(
-            &txt.font,
-            txt.frames[txt.cur_frame],
-            txt.roomloca,
-        );
-    }
 
 }
 
@@ -459,7 +514,7 @@ fn main() {
             pos: Vec2i { x: 51, y: 133 },
             sz: Vec2i { x: 6, y: 50 },
         },
-        target: 1,
+        target: 1, //living room
         spawn_pos: Vec2i { x: 224, y: 138 },
     };
 
@@ -468,7 +523,7 @@ fn main() {
             pos: Vec2i { x: 264, y: 157 },
             sz: Vec2i { x: 6, y: 50 },
         },
-        target: 0,
+        target: 0, //outside
         spawn_pos: Vec2i { x: 130, y: 157 },
     };
 
@@ -477,7 +532,7 @@ fn main() {
             pos: Vec2i { x: 164, y: 81 },
             sz: Vec2i { x: 25, y: 38 },
         },
-        target: 3,
+        target: 3, //bedroom1
         spawn_pos: Vec2i { x: 112, y: 110 },
     };
 
@@ -486,8 +541,8 @@ fn main() {
             pos: Vec2i { x: 239, y: 81 },
             sz: Vec2i { x: 25, y: 38 },
         },
-        target: 4,
-        spawn_pos: Vec2i { x: 194, y: 110 },
+        target: 5, //kitchen
+        spawn_pos: Vec2i { x: 141, y: 100 },
     };
 
     let table = Item {
@@ -559,8 +614,8 @@ fn main() {
             pos: Vec2i { x: 194, y: 152 },
             sz: Vec2i { x: 22, y: 5 }
         },
-        target: 2,
-        spawn_pos: Vec2i { x: 239, y: 101 },
+        target: 5,
+        spawn_pos: Vec2i { x: 95, y: 100 },
     };
 
     let bed2 = Item {
@@ -635,6 +690,37 @@ fn main() {
         text_num: 4,
     };
 
+    let kitchen_door = Door {
+        collider: Rect {
+            pos: Vec2i { x: 95, y: 150 },
+            sz: Vec2i { x: 20, y: 5 },
+        },
+        target: 2,
+        spawn_pos: Vec2i { x: 242, y: 130 },
+    };
+
+    let kitchen_door2 = Door {
+        collider: Rect {
+            pos: Vec2i { x: 197, y: 118 },
+            sz: Vec2i { x: 20, y: 10 },
+        },
+        target: 4, //bedroom2
+        spawn_pos: Vec2i { x: 164, y: 101 },
+    };
+
+    let kitchen  = Room {
+        name: String::from("Kitchen"),
+        desc: String::from("Idk whose room this is"),
+        items: Vec::<Item>::from([]),
+        img: Image::from_file(std::path::Path::new("content/kitchen.png")),
+        doors: Vec::<Door>::from([kitchen_door,kitchen_door2]),
+        floor: Rect {
+            pos: Vec2i { x: 86, y: 111 }, //-45 +23
+            sz: Vec2i { x: 128, y: 47 },
+        },
+        text_num: 22,
+    };
+
     let livingroom_door = Door {
         collider: Rect {
             pos: Vec2i { x: 264, y: 138},
@@ -680,7 +766,9 @@ fn main() {
     };
     
     let assets = Assets {
-        img: Image::from_file(std::path::Path::new("content/room3.png")),
+        menuimg: vec![Image::from_file(std::path::Path::new("content/space.png")),
+        Image::from_file(std::path::Path::new("content/title.png"))
+        ],
         colors: [
             Color(255, 0, 0, 255),
             Color(255, 255, 0, 255),
@@ -712,7 +800,7 @@ fn main() {
         fc: 0,
         color: 0,
         room: 0,
-        rooms: vec![yard, livingroom, hallway, bedroom1, bedroom2],
+        rooms: vec![yard, livingroom, hallway, bedroom1, bedroom2, kitchen],
         textbox: 0,
         textboxes: vec![Textbox::new("What a mysterious field... Press SPACE to use doors and interact."), //yard
                         Textbox::new("A livingroom? "), //livingroom
@@ -730,15 +818,18 @@ fn main() {
                         Textbox::new("I'm not sure who sleeps here..."), //bed2
                         Textbox::new("Just a couch. I don't feel like sitting down."), //couch
                         Textbox::new("There's nothing in this. I wonder why they have this dresser if they just keep it empty."), //dresser
-                        Textbox::new("It's not polite to read someone else's diary. GAME OVER."), // diary end game
+                        Textbox::new("It's not polite to read someone else's diary. GAME OVER. Press space to restart."), // diary end game
                         Textbox::new("It looks like someone just had dinner"), // table
                         Textbox::new("These are all my favorite books! I think I would get along with whoever owns them."), // shelf
                         Textbox::new("A pixel fence."), // fence
                         Textbox::new("This shrub almost looks like my old rabbit. It gave me a key! I wonder what this opens."), // 20: bunny
-                        Textbox::new("The house is locked.")], // 
-
+                        Textbox::new("The house is locked."), // 
+                        Textbox::new("Just a kitchen.")], // 
         sprite: sprite,
         inventory: vec![],
+        mode: GameMode::Menu,
+        menuidx: 0,
+        loss: false,
     };
 
     engine2d::main::go(state, assets, update, render2d);
