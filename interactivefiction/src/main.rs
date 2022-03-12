@@ -75,7 +75,7 @@ fn interact(state: &mut State){
                 // }
                 if item.name == "FinalStar"{
                     state.room = 4;
-                    state.textbox = item.text_num[0];
+                    state.textbox = 7;
                     state.mode = GameMode::Animation;
                 }
                 
