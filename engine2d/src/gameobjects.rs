@@ -21,7 +21,7 @@ pub struct Item {
     pub colliders: Vec<Rect>,
     pub frames: Vec<Rect>,
     pub cur_frame: usize,
-    pub text_num: usize,
+    pub text_num: Vec<usize>,
 }
 
 // #[derive(PartialEq, Eq, Clone)]
@@ -72,7 +72,7 @@ pub struct Room {
     pub items: Vec<Item>,
     pub img: Image,
     pub floor: Rect,
-    pub text_num: usize,
+    pub text_num: Vec<usize>,
 }
 
 // #[derive(PartialEq, Eq, Clone, Debug)]
@@ -85,6 +85,7 @@ pub struct Door {
 
 pub struct Assets {
     pub menuimg: Vec<Image>,
+    pub anim_frames: Vec<Image>,
     pub colors: [Color;6]
 }
 
@@ -101,47 +102,6 @@ pub struct State {
     pub inventory: Vec<String>,
     pub mode: GameMode,
     pub menuidx: i32,
+    pub animidx: i32,
     pub loss: bool,
-}
-
-impl State {
-
-    pub fn interact(&mut self) -> () {
-
-        let new_collider = Rect {
-            pos: Vec2i { x: self.sprite.collider.pos.x as i32 - RADIUS as i32 /2, y: self.sprite.collider.pos.y as i32 - RADIUS as i32/2},
-            sz: Vec2i { x: self.sprite.collider.sz.x as i32 + RADIUS as i32, y: self.sprite.collider.sz.y as i32 + RADIUS as i32},
-        };
-        self.textbox = self.room;
-        for item in self.rooms[self.room].items.iter_mut() {
-            for rect in item.colliders.iter() {
-                if new_collider.touches(*rect){
-                    println!("{:?}", item.name);
-                    self.textbox = item.text_num;
-                    if item.name == "Key"{
-                        println!("You got the key");
-                        item.roomloca =  Vec2i { x: 10, y: 10};
-
-                        self.inventory.push(item.name.clone());
-                    }
-                    if item.name == "Diary" && self.inventory.contains(&"Key".to_string()){
-                        println!("It's not polite to read someone else's diary. GAME OVER.");
-                        self.textbox= 16;
-                        item.roomloca =  Vec2i { x: 10, y: 10};
-                    }
-                   
-                } 
-            }   
-        }
-        
-        for door in self.rooms[self.room].doors.iter() {
-            if self.sprite.collider.touches(door.collider){
-                self.room = door.target;
-                //get offset of collider
-                let offset = self.sprite.collider.pos.y - self.sprite.cur_pos.y;
-                self.sprite.cur_pos = door.spawn_pos;
-                self.sprite.collider.pos = Vec2i {x: door.spawn_pos.x, y: door.spawn_pos.y + offset};
-            }
-        }
-    }
 }

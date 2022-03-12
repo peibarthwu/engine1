@@ -70,7 +70,7 @@ fn interact(state: &mut State){
         for rect in item.colliders.iter_mut() {
             if new_collider.touches(*rect){
                 println!("{:?}", item.name);
-                state.textbox = item.text_num;
+                state.textbox = item.[0];
                 if item.name == "Bunny"{
                     state.textbox= 20;
                     item.frames[0].pos =  Vec2i { x: 100, y: 60};
@@ -267,7 +267,7 @@ fn main() {
         }
         ]),
         cur_frame: 0,
-        text_num: 5,
+        text_num: vec![5],
      };
 
     let tree = Item {
@@ -300,7 +300,7 @@ fn main() {
             }
         ]),
         cur_frame: 0,
-        text_num: 6,
+        text_num: vec![6],
     };
 
     let tree1 = Item {
@@ -332,7 +332,7 @@ fn main() {
             }
         ]),
         cur_frame: 0,
-        text_num: 7,
+        text_num: vec![7],
     };
 
     let fence = Item {
@@ -355,7 +355,7 @@ fn main() {
                 sz: Vec2i { x: 320, y: 22 },
             }]),
         cur_frame: 0,
-        text_num: 19,
+        text_num: vec![19],
     };
 
     let key = Item {
@@ -376,7 +376,7 @@ fn main() {
             sz: Vec2i { x: 3, y: 7 },
         }],
         cur_frame: 0,
-        text_num: 10,
+        text_num: vec![10],
     };
 
     let couch = Item {
@@ -397,7 +397,7 @@ fn main() {
             sz: Vec2i { x: 69, y: 23 },
         }],
         cur_frame: 0,
-        text_num: 14,
+        text_num: vec![14],
     };
 
     let shelf = Item {
@@ -418,7 +418,7 @@ fn main() {
             sz: Vec2i { x: 41, y: 32 },
         }],
         cur_frame: 0,
-        text_num: 8,
+        text_num: vec![8],
     };
 
     let shrub = Item {
@@ -441,7 +441,7 @@ fn main() {
             }
         ]),
         cur_frame: 0,
-        text_num: 9,
+        text_num: vec![9],
     };
 
     let bunny = Item {
@@ -464,7 +464,7 @@ fn main() {
             },
         ]),
         cur_frame: 0,
-        text_num: 9,
+        text_num: vec![9],
     };
 
     let dresser = Item {
@@ -485,7 +485,7 @@ fn main() {
             sz: Vec2i { x: 31, y: 19 },
         }],
         cur_frame: 0,
-        text_num: 15,
+        text_num: vec![15],
     };
 
     let diary = Item {
@@ -506,7 +506,7 @@ fn main() {
             sz: Vec2i { x: 8, y: 10 },
         }],
         cur_frame: 0,
-        text_num:11,
+        text_num: vec![11],
     };
 
     let hallway_door1 = Door {
@@ -563,7 +563,7 @@ fn main() {
             sz: Vec2i { x: 61, y: 28 },
         }],
         cur_frame: 0,
-        text_num: 17,
+        text_num: vec![17],
     };
 
     let shelf2 = Item {
@@ -584,7 +584,7 @@ fn main() {
             sz: Vec2i { x: 31, y: 34 },
         }],
         cur_frame: 0,
-        text_num: 18,
+        text_num: vec![18],
     };
 
     let hallway = Room {
@@ -597,7 +597,7 @@ fn main() {
             pos: Vec2i { x: 52, y: 108 },
             sz: Vec2i { x: 217, y: 76 },
         },
-        text_num: 2,
+        text_num: vec![2],
     };
 
     let bedroom_door1 = Door {
@@ -637,7 +637,7 @@ fn main() {
             sz: Vec2i { x: 20, y: 39 },
         }],
         cur_frame: 0,
-        text_num: 13,
+        text_num: vec![13],
     };
 
     
@@ -660,7 +660,7 @@ fn main() {
             sz: Vec2i { x: 36, y: 40  },
         }],
         cur_frame: 0,
-        text_num: 12,
+        text_num: vec![12],
     };
 
 
@@ -674,7 +674,7 @@ fn main() {
             pos: Vec2i { x: 69, y: 102 },
             sz: Vec2i { x: 86, y: 54 },
         },
-        text_num: 3,
+        text_num: vec![3],
     };
 
     let bedroom2 = Room {
@@ -687,7 +687,7 @@ fn main() {
             pos: Vec2i { x: 159, y: 102 },
             sz: Vec2i { x: 86, y: 54 },
         },
-        text_num: 4,
+        text_num: vec![4],
     };
 
     let kitchen_door = Door {
@@ -718,7 +718,7 @@ fn main() {
             pos: Vec2i { x: 86, y: 111 }, //-45 +23
             sz: Vec2i { x: 128, y: 47 },
         },
-        text_num: 22,
+        text_num: vec![22],
     };
 
     let livingroom_door = Door {
@@ -740,7 +740,7 @@ fn main() {
             pos: Vec2i { x: 52, y: 107 },
             sz: Vec2i { x: 217, y: 96 },
         },
-        text_num: 1,
+        text_num: vec![1],
     };
 
     let door = Door {
@@ -762,13 +762,14 @@ fn main() {
             pos: Vec2i { x: 0, y: 0 },
             sz: Vec2i { x: 320, y: 240 },
         },
-        text_num: 0,
+        text_num: vec![0],
     };
     
     let assets = Assets {
         menuimg: vec![Image::from_file(std::path::Path::new("content/space.png")),
         Image::from_file(std::path::Path::new("content/title.png"))
         ],
+        anim_frames: vec![],
         colors: [
             Color(255, 0, 0, 255),
             Color(255, 255, 0, 255),
@@ -829,6 +830,7 @@ fn main() {
         inventory: vec![],
         mode: GameMode::Menu,
         menuidx: 0,
+        animidx: 0,
         loss: false,
     };
 
