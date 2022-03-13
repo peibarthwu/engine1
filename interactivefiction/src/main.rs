@@ -76,7 +76,9 @@ fn interact(state: &mut State){
                 if item.name == "FinalStar"{
                     state.room = 4;
                     state.textbox = 7;
+                    state.sprite.cur_pos = Vec2i { x: 217, y: 137 };
                     state.mode = GameMode::Animation;
+                    return;
                 }
                 
                 state.textbox = item.text_num[0];
@@ -500,7 +502,7 @@ fn main() {
             sz: Vec2i { x: 20, y: 40 },
         },
         target: 4,
-        spawn_pos: Vec2i { x: 90, y: 63 },
+        spawn_pos: Vec2i { x: 90, y: 83 },
     };
 
     let scene4 = Room {

@@ -70,7 +70,7 @@ fn interact(state: &mut State){
         for rect in item.colliders.iter_mut() {
             if new_collider.touches(*rect){
                 println!("{:?}", item.name);
-                state.textbox = item.[0];
+                state.textbox = item.text_num[0];
                 if item.name == "Bunny"{
                     state.textbox= 20;
                     item.frames[0].pos =  Vec2i { x: 100, y: 60};
